@@ -56,7 +56,7 @@
   --rose: #97637a;     /* headline / signature rose */
   --bordeaux: #4f132e; /* dahlia accent */
   --olive: #303f11;    /* foliage accent */
-  --ink: #2b0f18;      /* body text, derived from bordeaux */
+  --ink: #303f11;      /* body text — olive green */
 
 
   --background: var(--cream);

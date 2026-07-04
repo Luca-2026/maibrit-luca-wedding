@@ -62,39 +62,35 @@ function Nav() {
 function Hero() {
   return (
     <header id="top" className="relative">
-      <div className="mx-auto max-w-6xl px-5 pt-16 pb-24 md:pt-24 md:pb-40 grid md:grid-cols-[1.1fr_1fr] gap-10 md:gap-6 items-center relative">
-        <div className="relative z-10">
-          <p className="script text-4xl md:text-5xl text-rose mb-6">
-            save the date
-          </p>
-          <h1 className="display text-rose text-[22vw] md:text-[11rem] leading-[0.82]">
+      <div className="mx-auto max-w-6xl px-5 pt-12 pb-20 md:pt-24 md:pb-40 relative">
+        <div className="grid grid-cols-[1fr_auto] gap-4 md:gap-10 items-center">
+          <h1 className="display text-rose text-[26vw] md:text-[11rem] leading-[0.82]">
             <span className="block">24</span>
             <span className="block">10</span>
             <span className="block">26</span>
           </h1>
-          <div className="mt-10 flex items-center gap-4">
-            <span className="h-px w-10 bg-olive" aria-hidden="true" />
-            <p className="caps text-sm text-olive">Wir sagen ja</p>
-          </div>
-          <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
-            Maibrit <span className="text-rose/60">&amp;</span> Luca
-          </h2>
-          <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/85">
-            Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
-            wünschen uns, dass ihr an unserer Seite seid, wenn wir am
-            24. Oktober 2026 ja sagen.
-          </p>
-        </div>
-
-        <div className="relative md:absolute md:right-0 md:top-0 md:h-full md:w-[45%] pointer-events-none flex justify-center md:justify-end">
           <img
             src={aquarell}
             alt=""
             aria-hidden="true"
             width={2860}
             height={5084}
-            className="h-[60vh] md:h-[90%] md:mt-8 w-auto object-contain mix-blend-multiply"
+            className="h-[55vh] md:h-[80vh] w-auto object-contain mix-blend-multiply justify-self-end pointer-events-none"
           />
+        </div>
+        <div className="relative z-10 mt-10 md:mt-12 max-w-2xl">
+          <div className="flex items-center gap-4">
+            <span className="h-px w-10 bg-olive" aria-hidden="true" />
+            <p className="caps text-sm text-olive">Wir sagen ja</p>
+          </div>
+          <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
+            Maibrit &amp; Luca
+          </h2>
+          <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/85">
+            Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
+            wünschen uns, dass ihr an unserer Seite seid, wenn wir am
+            24. Oktober 2026 ja sagen.
+          </p>
         </div>
       </div>
     </header>
