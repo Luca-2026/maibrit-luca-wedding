@@ -121,43 +121,125 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
 
 /* ---------------- HERO ---------------- */
 function Hero() {
+  const [progress, setProgress] = useState(0); // 0 = date, 1 = flower
+
+  useEffect(() => {
+    let raf = 0;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function update() {
+      raf = 0;
+      // Scroll-Distanz über die der Cross-Fade läuft: eine volle Viewport-Höhe.
+      const range = window.innerHeight;
+      const y = Math.max(0, Math.min(range, window.scrollY));
+      setProgress(reduced ? 1 : y / range);
+    }
+    function onScroll() {
+      if (!raf) raf = requestAnimationFrame(update);
+    }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Weiche Easing-Kurven für den Übergang
+  const dateOpacity = Math.max(0, 1 - progress * 1.4);
+  const dateScale = 1 - progress * 0.12;
+  const dateBlur = progress * 6;
+
+  const florStart = 0.15; // Blume beginnt leicht verzögert
+  const florP = Math.max(0, Math.min(1, (progress - florStart) / (1 - florStart)));
+  const florOpacity = florP;
+  const florScale = 0.55 + florP * 0.55; // wächst von klein zu groß
+
+  // Intro-Text erscheint, sobald die Blume sichtbar wird
+  const introOpacity = Math.max(0, Math.min(1, (progress - 0.5) * 2));
+
   return (
     <header id="top" className="relative">
-      <div className="mx-auto max-w-6xl px-5 pt-10 pb-16 md:pt-20 md:pb-32 relative">
-        <div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_1fr] gap-2 md:gap-16 items-center -ml-4 md:ml-0">
-          <img
-            src={datum}
-            alt="24. 10. 2026"
-            width={1058}
-            height={1920}
-            className="anim-hero-date h-[45vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
-          />
-          <div className="anim-float justify-self-end md:justify-self-start -mr-8 md:mr-0 pointer-events-none">
+      {/* Doppelte Viewporthöhe = Scroll-Bühne für den Cross-Fade */}
+      <div className="relative h-[200vh]">
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* Datum — mittig, startet groß */}
+          <div
+            className="anim-hero-date absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{
+              opacity: dateOpacity,
+              transform: `scale(${dateScale})`,
+              filter: `blur(${dateBlur}px)`,
+              transition: "opacity 120ms linear, filter 120ms linear",
+              willChange: "opacity, transform, filter",
+            }}
+          >
             <img
-              src={aquarell}
-              alt=""
-              aria-hidden="true"
-              width={2860}
-              height={5084}
-              className="anim-hero-flor h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply"
+              src={datum}
+              alt="24. 10. 2026"
+              width={1058}
+              height={1920}
+              className="h-[68vh] md:h-[82vh] w-auto object-contain mix-blend-multiply"
             />
           </div>
-        </div>
-        <div className="relative z-10 mt-12 md:mt-16 md:text-center md:mx-auto max-w-2xl">
-          <div className="anim-fade-up anim-delay-1 flex items-center gap-4 md:justify-center">
-            <span className="h-px w-10 bg-olive" aria-hidden="true" />
-            <p className="caps text-sm text-olive">Wir sagen ja</p>
-            <span className="hidden md:block h-px w-10 bg-olive" aria-hidden="true" />
+
+          {/* Blume — wächst mittig ein */}
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{
+              opacity: florOpacity,
+              transform: `scale(${florScale})`,
+              transition: "opacity 120ms linear",
+              willChange: "opacity, transform",
+            }}
+            aria-hidden="true"
+          >
+            <div className="anim-float">
+              <img
+                src={aquarell}
+                alt=""
+                width={2860}
+                height={5084}
+                className="h-[75vh] md:h-[90vh] w-auto object-contain mix-blend-multiply"
+              />
+            </div>
           </div>
-          <h2 className="anim-fade-up anim-delay-2 mt-6 display text-rose text-5xl md:text-7xl">
-            Maibrit &amp; Luca
-          </h2>
-          <p className="anim-fade-up anim-delay-3 mt-8 max-w-md md:mx-auto text-lg leading-relaxed text-ink/85">
-            Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
-            wünschen uns, dass ihr an unserer Seite seid, wenn wir am
-            24. Oktober 2026 ja sagen.
-          </p>
+
+          {/* Scroll-Hinweis unten — verschwindet mit der Zahl */}
+          <div
+            className="absolute bottom-8 left-0 right-0 flex justify-center pointer-events-none"
+            style={{ opacity: Math.max(0, 1 - progress * 2) }}
+            aria-hidden="true"
+          >
+            <span className="caps text-[10px] tracking-[0.3em] text-olive/70">
+              scrollen
+            </span>
+          </div>
         </div>
+      </div>
+
+      {/* Intro-Text unter dem Cross-Fade */}
+      <div
+        className="mx-auto max-w-2xl px-5 pb-24 md:pb-32 text-center"
+        style={{ opacity: introOpacity, transition: "opacity 200ms linear" }}
+      >
+        <div className="flex items-center gap-4 justify-center">
+          <span className="h-px w-10 bg-olive" aria-hidden="true" />
+          <p className="caps text-sm text-olive">Wir sagen ja</p>
+          <span className="h-px w-10 bg-olive" aria-hidden="true" />
+        </div>
+        <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
+          Maibrit &amp; Luca
+        </h2>
+        <p className="mt-8 max-w-md mx-auto text-lg leading-relaxed text-ink/85">
+          Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
+          wünschen uns, dass ihr an unserer Seite seid, wenn wir am
+          24. Oktober 2026 ja sagen.
+        </p>
       </div>
     </header>
   );
