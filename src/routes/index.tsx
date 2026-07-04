@@ -131,8 +131,10 @@ function Hero() {
 
     function update() {
       raf = 0;
-      // Scroll-Distanz über die der Cross-Fade läuft: eine volle Viewport-Höhe.
-      const range = window.innerHeight;
+      // Scroll-Bühne: 80% Viewporthöhe fürs Crossfaden.
+      // Kurzer Puffer am Ende (~10% VH), damit die Blume voll steht,
+      // bevor die Sticky freigibt und der Intro-Text hochkommt.
+      const range = window.innerHeight * 0.8;
       const y = Math.max(0, Math.min(range, window.scrollY));
       setProgress(reduced ? 1 : y / range);
     }
