@@ -40,9 +40,7 @@ function Nav() {
       className="sticky top-0 z-40 bg-cream/85 backdrop-blur-sm border-b border-rose/20"
     >
       <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-4">
-        <a href="#top" className="script text-2xl text-rose leading-none">
-          M &amp; L
-        </a>
+        <span className="caps text-xs text-rose">24 · 10 · 2026</span>
         <ul className="hidden md:flex gap-8 caps text-xs text-rose">
           {items.map(([label, href]) => (
             <li key={href}>
@@ -55,9 +53,6 @@ function Nav() {
             </li>
           ))}
         </ul>
-        <span className="caps text-xs text-rose hidden sm:inline">
-          24 · 10 · 26
-        </span>
       </div>
     </nav>
   );
