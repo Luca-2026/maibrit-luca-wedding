@@ -48,9 +48,9 @@ function b64ToBuffer(b64: string): ArrayBuffer {
 
 export async function decryptContent(password: string): Promise<ProtectedContent> {
   const enc = new TextEncoder();
-  const salt = b64ToBytes(PROTECTED_PAYLOAD.salt);
-  const iv = b64ToBytes(PROTECTED_PAYLOAD.iv);
-  const ct = b64ToBytes(PROTECTED_PAYLOAD.ciphertext);
+  const salt = b64ToBuffer(PROTECTED_PAYLOAD.salt);
+  const iv = b64ToBuffer(PROTECTED_PAYLOAD.iv);
+  const ct = b64ToBuffer(PROTECTED_PAYLOAD.ciphertext);
 
   const baseKey = await crypto.subtle.importKey(
     "raw",
