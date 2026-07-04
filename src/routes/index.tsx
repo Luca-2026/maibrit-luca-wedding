@@ -65,13 +65,13 @@ function Hero() {
   return (
     <header id="top" className="relative">
       <div className="mx-auto max-w-6xl px-5 pt-10 pb-16 md:pt-20 md:pb-32 relative">
-        <div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_1fr] gap-6 md:gap-16 items-center">
+        <div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_1fr] gap-2 md:gap-16 items-center -ml-4 md:ml-0">
           <img
             src={datum}
             alt="24. 10. 2026"
             width={1058}
             height={1920}
-            className="h-[65vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
+            className="h-[45vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
           />
           <img
             src={aquarell}
@@ -79,7 +79,7 @@ function Hero() {
             aria-hidden="true"
             width={2860}
             height={5084}
-            className="h-[65vh] md:h-[85vh] w-auto object-contain mix-blend-multiply justify-self-end md:justify-self-start pointer-events-none"
+            className="h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply justify-self-end md:justify-self-start pointer-events-none -mr-8 md:mr-0"
           />
         </div>
         <div className="relative z-10 mt-12 md:mt-16 md:text-center md:mx-auto max-w-2xl">
