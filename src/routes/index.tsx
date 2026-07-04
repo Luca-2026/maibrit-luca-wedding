@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import aquarellAsset from "@/assets/aquarell.png.asset.json";
+import datumAsset from "@/assets/datum.png.asset.json";
 const aquarell = aquarellAsset.url;
+const datum = datumAsset.url;
 
 export const Route = createFileRoute("/")({
   component: WeddingPage,
