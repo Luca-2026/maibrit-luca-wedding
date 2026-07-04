@@ -162,6 +162,9 @@ function Hero() {
   const florOpacity = florP;
   const florScale = 0.55 + florP * 0.55; // wächst von klein zu groß
 
+  // Intro-Text erscheint, sobald die Blume komplett steht
+  const introOpacity = florP;
+
   return (
     <header id="top" className="relative">
       {/* Scroll-Bühne: 180vh hoch, Sticky-Kind 100vh → 80vh Scroll fürs Crossfade,
