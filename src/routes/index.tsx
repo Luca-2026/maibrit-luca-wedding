@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import aquarell from "@/assets/aquarell.png";
+import aquarellAsset from "@/assets/aquarell.png.asset.json";
+const aquarell = aquarellAsset.url;
 
 export const Route = createFileRoute("/")({
   component: WeddingPage,
@@ -39,9 +40,7 @@ function Nav() {
       className="sticky top-0 z-40 bg-cream/85 backdrop-blur-sm border-b border-rose/20"
     >
       <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-4">
-        <a href="#top" className="script text-2xl text-rose leading-none">
-          M &amp; L
-        </a>
+        <span className="caps text-xs text-rose">24 · 10 · 2026</span>
         <ul className="hidden md:flex gap-8 caps text-xs text-rose">
           {items.map(([label, href]) => (
             <li key={href}>
@@ -54,9 +53,6 @@ function Nav() {
             </li>
           ))}
         </ul>
-        <span className="caps text-xs text-rose hidden sm:inline">
-          24 · 10 · 26
-        </span>
       </div>
     </nav>
   );
@@ -80,12 +76,8 @@ function Hero() {
             <span className="h-px w-10 bg-olive" aria-hidden="true" />
             <p className="caps text-sm text-olive">Wir sagen ja</p>
           </div>
-          <h2 className="mt-6 display text-bordeaux text-5xl md:text-7xl">
-            Maibrit
-            <span className="script text-rose text-4xl md:text-5xl mx-3 align-middle">
-              &amp;
-            </span>
-            Luca
+          <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
+            Maibrit <span className="text-rose/60">&amp;</span> Luca
           </h2>
           <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/85">
             Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
@@ -94,14 +86,14 @@ function Hero() {
           </p>
         </div>
 
-        <div className="relative md:absolute md:right-0 md:top-0 md:h-full md:w-[55%] pointer-events-none">
+        <div className="relative md:absolute md:right-0 md:top-0 md:h-full md:w-[45%] pointer-events-none flex justify-center md:justify-end">
           <img
             src={aquarell}
             alt=""
             aria-hidden="true"
-            width={1280}
-            height={1600}
-            className="w-full h-auto md:h-full md:object-cover md:object-left-bottom mix-blend-multiply"
+            width={2860}
+            height={5084}
+            className="h-[60vh] md:h-[90%] md:mt-8 w-auto object-contain mix-blend-multiply"
           />
         </div>
       </div>
@@ -293,32 +285,17 @@ function Uebernachtung() {
 
 /* ---------------- DRESSCODE ---------------- */
 function Dresscode() {
-  const swatches = [
-    { hex: "#FFF5EB", label: "Cream" },
-    { hex: "#97637A", label: "Altrosa" },
-    { hex: "#4F132E", label: "Bordeaux" },
-    { hex: "#303F11", label: "Olive" },
-  ];
   return (
-    <Section id="dresscode" eyebrow="Was ihr tragt" title="Dresscode">
-      <p className="script text-4xl text-rose mb-8">Soft &amp; Golden Autumn</p>
-      <p className="text-ink/85 max-w-2xl mb-10">
-        Herbstlich, warm, festlich. Denkt an weiche Stoffe, gedeckte Töne und
-        goldenes Licht. <strong className="text-bordeaux">Bitte kein Weiß</strong> — das
-        heben wir uns für Maibrit auf.
+    <Section id="dresscode" eyebrow="Was ihr tragt" title="Kleidung">
+      <p className="text-ink/85 max-w-2xl text-lg leading-relaxed">
+        Es gibt keinen festen Dresscode — zieht an, worin ihr euch schön und
+        wohl fühlt. Wir wünschen uns eine{" "}
+        <span className="text-bordeaux">schicke, aber legere</span> Note.
       </p>
-      <ul className="flex flex-wrap gap-6">
-        {swatches.map((s) => (
-          <li key={s.hex} className="flex flex-col items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="block w-20 h-20 rounded-full border border-ink/10 shadow-sm"
-              style={{ backgroundColor: s.hex }}
-            />
-            <span className="caps text-xs text-olive">{s.label}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="mt-6 text-ink/85 max-w-2xl text-lg leading-relaxed">
+        Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
+        {" "}— das heben wir uns für Maibrit auf.
+      </p>
     </Section>
   );
 }
@@ -469,7 +446,7 @@ function Footer() {
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
         <div>
-          <p className="script text-5xl text-rose mb-2">
+          <p className="display text-5xl text-rose mb-2">
             Maibrit &amp; Luca
           </p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>

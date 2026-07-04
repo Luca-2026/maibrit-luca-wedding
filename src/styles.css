@@ -33,31 +33,31 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-display: "The Season", "Cormorant Garamond", serif;
+  --font-display: "The Seasons", "Cormorant Garamond", "Playfair Display", serif;
   --font-script: "August Script", "Great Vibes", cursive;
-  --font-sans: "Sophia Pro", "Jost", system-ui, sans-serif;
-  --font-body: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Sofia Pro", "Montserrat", system-ui, sans-serif;
+  --font-body: "Sofia Pro", "Montserrat", system-ui, sans-serif;
 }
 
-/* PLACEHOLDER: The Season font not provided — swap this @font-face when the
-   real .woff2 is available. Cormorant Garamond loaded via <link> in __root.tsx
-   provides the visual fallback. */
-/* PLACEHOLDER: August_Script_Bold_Free.ttf not provided — swap this when the
-   file is uploaded to public/fonts/. Great Vibes serves as visual fallback. */
-/* @font-face {
+/* August Script — self-hosted from public/fonts/ */
+@font-face {
   font-family: "August Script";
-  src: url("/fonts/August_Script_Bold_Free.ttf") format("truetype");
+  src: url("/fonts/AugustScript-Bold.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
   font-display: swap;
-} */
+}
 
 :root {
   --radius: 0.25rem;
 
-  --cream: #fff5eb;
-  --rose: #97637a;
-  --bordeaux: #4f132e;
-  --olive: #303f11;
-  --ink: #2b0f18; /* dark ink derived from bordeaux for body copy */
+  /* Palette sampled from the Save-the-Date card so screen matches print */
+  --cream: #f3f0e8;    /* warm neutral background */
+  --rose: #97637a;     /* headline / signature rose */
+  --bordeaux: #4f132e; /* dahlia accent */
+  --olive: #303f11;    /* foliage accent */
+  --ink: #2b0f18;      /* body text, derived from bordeaux */
+
 
   --background: var(--cream);
   --foreground: var(--ink);
