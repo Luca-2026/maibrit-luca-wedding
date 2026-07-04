@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import aquarellAsset from "@/assets/aquarell.png.asset.json";
 import datumAsset from "@/assets/datum.png.asset.json";
+import {
+  decryptContent,
+  type ProtectedContent,
+} from "@/lib/protected-content";
+
 const aquarell = aquarellAsset.url;
 const datum = datumAsset.url;
 
@@ -12,23 +17,65 @@ export const Route = createFileRoute("/")({
 // PLACEHOLDER: replace with real Formspree (or similar) endpoint before going live.
 const RSVP_ENDPOINT = "https://formspree.io/f/REPLACE_ME";
 
+// Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
+const SESSION_KEY = "mul-unlocked-content";
+
 function WeddingPage() {
+  const [content, setContent] = useState<ProtectedContent | null>(null);
+
+  // Session persistieren, damit Refresh nicht erneut Passwort verlangt.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (raw) setContent(JSON.parse(raw) as ProtectedContent);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function handleUnlock(c: ProtectedContent) {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(c));
+    } catch {
+      /* ignore */
+    }
+    setContent(c);
+  }
+
+  function handleLock() {
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+    setContent(null);
+  }
+
   return (
     <div className="min-h-screen bg-cream text-ink overflow-x-hidden">
-      <Nav />
+      <Nav unlocked={!!content} onLock={handleLock} />
       <Hero />
-      <Ablauf />
-      <Anfahrt />
-      <Uebernachtung />
-      <Dresscode />
-      <Rsvp />
-      <Footer />
+      {content ? (
+        <>
+          <Ablauf items={content.ablauf} />
+          <Anfahrt locations={content.locations} />
+          <Uebernachtung hotels={content.hotels} />
+          <Dresscode />
+          <Rsvp deadline={content.rsvpDeadline} email={content.contactEmail} />
+          <Footer email={content.contactEmail} />
+        </>
+      ) : (
+        <>
+          <Gate onUnlock={handleUnlock} />
+          <PublicFooter />
+        </>
+      )}
     </div>
   );
 }
 
 /* ---------------- NAV ---------------- */
-function Nav() {
+function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
   const items = [
     ["Ablauf", "#ablauf"],
     ["Anfahrt", "#anfahrt"],
@@ -43,18 +90,28 @@ function Nav() {
     >
       <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-4">
         <span className="caps text-xs text-rose">24 · 10 · 2026</span>
-        <ul className="hidden md:flex gap-8 caps text-xs text-rose">
-          {items.map(([label, href]) => (
-            <li key={href}>
-              <a
-                href={href}
-                className="hover:text-bordeaux transition-colors"
-              >
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        {unlocked ? (
+          <>
+            <ul className="hidden md:flex gap-8 caps text-xs text-rose">
+              {items.map(([label, href]) => (
+                <li key={href}>
+                  <a href={href} className="hover:text-bordeaux transition-colors">
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={onLock}
+              className="caps text-[10px] text-rose/70 hover:text-bordeaux transition-colors"
+              aria-label="Ausloggen"
+            >
+              Sperren
+            </button>
+          </>
+        ) : (
+          <span className="caps text-[10px] text-rose/70">Privat</span>
+        )}
       </div>
     </nav>
   );
@@ -71,7 +128,7 @@ function Hero() {
             alt="24. 10. 2026"
             width={1058}
             height={1920}
-            className="h-[45vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
+            className="anim-hero-date h-[45vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
           />
           <img
             src={aquarell}
@@ -79,19 +136,19 @@ function Hero() {
             aria-hidden="true"
             width={2860}
             height={5084}
-            className="h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply justify-self-end md:justify-self-start pointer-events-none -mr-8 md:mr-0"
+            className="anim-hero-flor anim-float h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply justify-self-end md:justify-self-start pointer-events-none -mr-8 md:mr-0"
           />
         </div>
         <div className="relative z-10 mt-12 md:mt-16 md:text-center md:mx-auto max-w-2xl">
-          <div className="flex items-center gap-4 md:justify-center">
+          <div className="anim-fade-up anim-delay-1 flex items-center gap-4 md:justify-center">
             <span className="h-px w-10 bg-olive" aria-hidden="true" />
             <p className="caps text-sm text-olive">Wir sagen ja</p>
             <span className="hidden md:block h-px w-10 bg-olive" aria-hidden="true" />
           </div>
-          <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
+          <h2 className="anim-fade-up anim-delay-2 mt-6 display text-rose text-5xl md:text-7xl">
             Maibrit &amp; Luca
           </h2>
-          <p className="mt-8 max-w-md md:mx-auto text-lg leading-relaxed text-ink/85">
+          <p className="anim-fade-up anim-delay-3 mt-8 max-w-md md:mx-auto text-lg leading-relaxed text-ink/85">
             Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
             wünschen uns, dass ihr an unserer Seite seid, wenn wir am
             24. Oktober 2026 ja sagen.
@@ -99,6 +156,79 @@ function Hero() {
         </div>
       </div>
     </header>
+  );
+}
+
+/* ---------------- GATE (Passwort-Login) ---------------- */
+function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!password.trim()) return;
+    setStatus("checking");
+    try {
+      const content = await decryptContent(password.trim());
+      onUnlock(content);
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <section
+      id="login"
+      aria-labelledby="login-heading"
+      className="anim-fade-up anim-delay-4 mx-auto max-w-md px-5 pb-24"
+    >
+      <div className="border-t border-rose/25 pt-10 text-center">
+        <p className="caps text-xs text-olive mb-3">Persönlicher Zugang</p>
+        <h2 id="login-heading" className="display text-rose text-3xl md:text-4xl mb-4">
+          Bitte einloggen
+        </h2>
+        <p className="text-sm text-ink/80 mb-8 leading-relaxed">
+          Alle Details zu Ablauf, Location und Anfahrt sind nur für unsere Gäste
+          sichtbar. Bitte gebt den Code ein, den ihr auf eurer Einladung findet.
+        </p>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <label className="block text-left">
+            <span className="sr-only">Zugangscode</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              inputMode="text"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (status === "error") setStatus("idle");
+              }}
+              placeholder="Zugangscode"
+              className="w-full bg-cream border border-rose/40 px-4 py-3 text-center text-ink placeholder:text-rose/50 focus:border-bordeaux focus:outline-none transition-colors rounded-sm"
+              aria-invalid={status === "error"}
+              aria-describedby={status === "error" ? "gate-error" : undefined}
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={status === "checking" || !password.trim()}
+            className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-ink transition-colors disabled:opacity-60"
+          >
+            {status === "checking" ? "Prüfen…" : "Einloggen"}
+          </button>
+          {status === "error" && (
+            <p id="gate-error" role="alert" className="text-bordeaux text-sm">
+              Code stimmt nicht. Bitte prüft eure Einladung.
+            </p>
+          )}
+        </form>
+        <p className="mt-8 text-xs text-olive/70 leading-relaxed">
+          Aus Datenschutzgründen sind Ort, Adressen und weitere Details Ende-zu-Ende
+          verschlüsselt (AES-GCM, PBKDF2) und werden erst nach erfolgreicher
+          Eingabe entschlüsselt.
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -115,12 +245,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20 py-20 md:py-28">
+    <section id={id} className="scroll-mt-20 py-20 md:py-28 anim-fade-up">
       <div className="mx-auto max-w-4xl px-5">
         <p className="caps text-xs text-olive mb-4">{eyebrow}</p>
-        <h2 className="display text-rose text-5xl md:text-6xl mb-10">
-          {title}
-        </h2>
+        <h2 className="display text-rose text-5xl md:text-6xl mb-10">{title}</h2>
         {children}
       </div>
     </section>
@@ -128,19 +256,7 @@ function Section({
 }
 
 /* ---------------- ABLAUF ---------------- */
-function Ablauf() {
-  const items = [
-    {
-      time: "14:00",
-      title: "Standesamtliche Trauung",
-      where: "Köllenhof, Wachtberg-Ließem",
-    },
-    {
-      time: "16:30",
-      title: "Gartenfest",
-      where: "Bonn-Ückesdorf",
-    },
-  ];
+function Ablauf({ items }: { items: ProtectedContent["ablauf"] }) {
   return (
     <Section id="ablauf" eyebrow="Der Tag" title="Ablauf">
       <ul className="space-y-8">
@@ -167,97 +283,42 @@ function Ablauf() {
 }
 
 /* ---------------- ANFAHRT ---------------- */
-function Anfahrt() {
+function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
   return (
     <Section id="anfahrt" eyebrow="So findet ihr uns" title="Anfahrt & Parken">
       <div className="grid md:grid-cols-2 gap-10">
-        <LocationCard
-          label="Trauung — 14:00"
-          name="Köllenhof"
-          address={
-            <>
-              [Straße + Nr.]
-              <br />
-              53343 Wachtberg-Ließem
-            </>
-          }
-          maps="https://maps.google.com/?q=Köllenhof+Wachtberg-Ließem"
-          note="Parkplätze sind vor Ort begrenzt vorhanden — Fahrgemeinschaften werden empfohlen."
-        />
-        <LocationCard
-          label="Gartenfest — ab 16:30"
-          name="[Location Bonn-Ückesdorf]"
-          address={
-            <>
-              [Straße + Nr.]
-              <br />
-              53127 Bonn-Ückesdorf
-            </>
-          }
-          maps="https://maps.google.com/?q=Bonn-Ückesdorf"
-          note="Parken in den umliegenden Seitenstraßen."
-        />
+        {locations.map((loc) => (
+          <article key={loc.name} className="border-t border-rose/25 pt-6">
+            <p className="caps text-xs text-olive mb-3">{loc.label}</p>
+            <h3 className="display text-3xl text-bordeaux mb-3">{loc.name}</h3>
+            <address className="not-italic text-ink/85 mb-4">
+              {loc.addressLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < loc.addressLines.length - 1 && <br />}
+                </span>
+              ))}
+            </address>
+            <p className="text-sm text-ink/70 mb-4">{loc.note}</p>
+            <a
+              href={loc.maps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="caps text-xs text-rose border-b border-rose pb-1 hover:text-bordeaux hover:border-bordeaux transition-colors"
+            >
+              In Google Maps öffnen
+            </a>
+          </article>
+        ))}
       </div>
     </Section>
   );
 }
 
-function LocationCard({
-  label,
-  name,
-  address,
-  maps,
-  note,
-}: {
-  label: string;
-  name: string;
-  address: React.ReactNode;
-  maps: string;
-  note: string;
-}) {
-  return (
-    <article className="border-t border-rose/25 pt-6">
-      <p className="caps text-xs text-olive mb-3">{label}</p>
-      <h3 className="display text-3xl text-bordeaux mb-3">{name}</h3>
-      <address className="not-italic text-ink/85 mb-4">{address}</address>
-      <p className="text-sm text-ink/70 mb-4">{note}</p>
-      <a
-        href={maps}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="caps text-xs text-rose border-b border-rose pb-1 hover:text-bordeaux hover:border-bordeaux transition-colors"
-      >
-        In Google Maps öffnen
-      </a>
-    </article>
-  );
-}
-
 /* ---------------- ÜBERNACHTUNG ---------------- */
-function Uebernachtung() {
-  const hotels = [
-    {
-      name: "[Hotel 1]",
-      distance: "ca. 5 km zur Location",
-      url: "#",
-    },
-    {
-      name: "[Hotel 2]",
-      distance: "ca. 8 km zur Location",
-      url: "#",
-    },
-    {
-      name: "[Pension / B&B]",
-      distance: "ca. 3 km zur Location",
-      url: "#",
-    },
-  ];
+function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
   return (
-    <Section
-      id="uebernachtung"
-      eyebrow="Bleibt über Nacht"
-      title="Übernachtung"
-    >
+    <Section id="uebernachtung" eyebrow="Bleibt über Nacht" title="Übernachtung">
       <p className="text-ink/80 mb-10 max-w-2xl">
         Damit ihr entspannt feiern könnt, hier drei Vorschläge in der Nähe.
         Bitte kümmert euch selbst um die Buchung — Kontingente haben wir nicht
@@ -302,10 +363,8 @@ function Dresscode() {
 }
 
 /* ---------------- RSVP ---------------- */
-function Rsvp() {
-  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
-    "idle",
-  );
+function Rsvp({ deadline, email }: { deadline: string; email: string }) {
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [attending, setAttending] = useState<"yes" | "no">("yes");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -333,8 +392,8 @@ function Rsvp() {
     <Section id="rsvp" eyebrow="Antwort erbeten" title="RSVP">
       <p className="text-ink/85 mb-2 max-w-2xl">
         Bitte gebt uns bis zum{" "}
-        <strong className="text-bordeaux">15. September 2026</strong> Bescheid,
-        ob ihr dabei sein könnt.
+        <strong className="text-bordeaux">{deadline}</strong> Bescheid, ob ihr
+        dabei sein könnt.
       </p>
 
       {status === "ok" ? (
@@ -349,9 +408,7 @@ function Rsvp() {
           <Field label="Name" name="name" required />
 
           <fieldset>
-            <legend className="caps text-xs text-olive mb-3">
-              Kommt ihr?
-            </legend>
+            <legend className="caps text-xs text-olive mb-3">Kommt ihr?</legend>
             <div
               role="radiogroup"
               className="inline-flex border border-rose/40 rounded-full p-1 bg-cream"
@@ -397,7 +454,11 @@ function Rsvp() {
           {status === "error" && (
             <p role="alert" className="text-bordeaux text-sm">
               Das hat nicht geklappt. Bitte versucht es erneut oder schreibt uns
-              direkt.
+              direkt an{" "}
+              <a href={`mailto:${email}`} className="underline">
+                {email}
+              </a>
+              .
             </p>
           )}
 
@@ -441,32 +502,26 @@ function Field({
   );
 }
 
-/* ---------------- FOOTER ---------------- */
-function Footer() {
+/* ---------------- FOOTER (unlocked) ---------------- */
+function Footer({ email }: { email: string }) {
   return (
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
         <div>
-          <p className="display text-5xl text-rose mb-2">
-            Maibrit &amp; Luca
-          </p>
+          <p className="display text-5xl text-rose mb-2">Maibrit &amp; Luca</p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>
           <p className="mt-6 text-sm text-ink/70 max-w-sm">
             Fragen? Schreibt uns:{" "}
             <a
-              href="mailto:hallo@maibritundluca.de"
+              href={`mailto:${email}`}
               className="text-bordeaux underline underline-offset-4 decoration-rose/60"
             >
-              hallo@maibritundluca.de
+              {email}
             </a>
           </p>
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
-            <a href="#impressum" className="hover:text-bordeaux">
-              Impressum
-            </a>
-            <a href="#datenschutz" className="hover:text-bordeaux">
-              Datenschutz
-            </a>
+            <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
+            <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
           </div>
         </div>
         <img
@@ -480,32 +535,59 @@ function Footer() {
         />
       </div>
 
-      <div className="border-t border-rose/20">
-        <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-ink/75">
-          <section id="impressum">
-            <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
-            <p>
-              Maibrit [Nachname] &amp; Luca [Nachname]
-              <br />
-              [Straße + Nr.], [PLZ Ort]
-              <br />
-              Kontakt: hallo@maibritundluca.de
-            </p>
-          </section>
-          <section id="datenschutz">
-            <h3 className="caps text-xs text-olive mb-2">Datenschutz</h3>
-            <p>
-              Diese Seite ist privat und nicht über Suchmaschinen auffindbar.
-              Die per RSVP-Formular übermittelten Angaben (Name, Zu-/Absage,
-              Begleitung) verarbeiten wir ausschließlich zur Organisation
-              unserer Hochzeit und löschen sie spätestens einen Monat nach dem
-              24.10.2026. Es findet kein Tracking, keine Analyse und keine
-              Weitergabe an Dritte statt — abgesehen vom Formular-Dienstleister
-              (Formspree), der die Zustellung technisch abwickelt.
-            </p>
-          </section>
+      <LegalSections email={email} />
+    </footer>
+  );
+}
+
+/* ---------------- FOOTER (locked / public) ---------------- */
+function PublicFooter() {
+  return (
+    <footer className="mt-8 border-t border-rose/20 bg-cream">
+      <div className="mx-auto max-w-6xl px-5 py-10 flex flex-wrap items-center justify-between gap-4 text-xs text-olive/80">
+        <p className="caps">Maibrit &amp; Luca · 24 · 10 · 2026</p>
+        <div className="flex gap-6 caps text-rose">
+          <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
+          <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
         </div>
       </div>
+      <LegalSections email="hallo@maibritundluca.de" />
     </footer>
+  );
+}
+
+function LegalSections({ email }: { email: string }) {
+  return (
+    <div className="border-t border-rose/20">
+      <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-ink/75">
+        <section id="impressum">
+          <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
+          <p>
+            Maibrit [Nachname] &amp; Luca [Nachname]
+            <br />
+            [Straße + Nr.], [PLZ Ort]
+            <br />
+            Kontakt: {email}
+          </p>
+        </section>
+        <section id="datenschutz">
+          <h3 className="caps text-xs text-olive mb-2">Datenschutz</h3>
+          <p>
+            Diese Seite ist privat und nicht über Suchmaschinen auffindbar
+            (noindex). Details zu Ort, Ablauf und Adressen liegen ausschließlich
+            als AES-GCM-verschlüsseltes Chiffrat im Client-Bundle und werden
+            erst nach Eingabe des Gäste-Codes lokal im Browser entschlüsselt —
+            es findet keine serverseitige Auth-Abfrage statt, das Passwort
+            verlässt euer Gerät nicht. Die per RSVP-Formular übermittelten
+            Angaben (Name, Zu-/Absage, Begleitung) verarbeiten wir
+            ausschließlich zur Organisation unserer Hochzeit und löschen sie
+            spätestens einen Monat nach dem 24.10.2026. Es findet kein
+            Tracking, keine Analyse und keine Weitergabe an Dritte statt —
+            abgesehen vom Formular-Dienstleister (Formspree), der die
+            Zustellung technisch abwickelt.
+          </p>
+        </section>
+      </div>
+    </div>
   );
 }
