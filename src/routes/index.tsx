@@ -130,14 +130,16 @@ function Hero() {
             height={1920}
             className="anim-hero-date h-[45vh] md:h-[80vh] w-auto object-contain mix-blend-multiply md:justify-self-end"
           />
-          <img
-            src={aquarell}
-            alt=""
-            aria-hidden="true"
-            width={2860}
-            height={5084}
-            className="anim-hero-flor anim-float h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply justify-self-end md:justify-self-start pointer-events-none -mr-8 md:mr-0"
-          />
+          <div className="anim-float justify-self-end md:justify-self-start -mr-8 md:mr-0 pointer-events-none">
+            <img
+              src={aquarell}
+              alt=""
+              aria-hidden="true"
+              width={2860}
+              height={5084}
+              className="anim-hero-flor h-[80vh] md:h-[85vh] w-auto object-contain mix-blend-multiply"
+            />
+          </div>
         </div>
         <div className="relative z-10 mt-12 md:mt-16 md:text-center md:mx-auto max-w-2xl">
           <div className="anim-fade-up anim-delay-1 flex items-center gap-4 md:justify-center">
