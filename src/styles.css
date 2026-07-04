@@ -33,10 +33,10 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-display: "The Season", "Cormorant Garamond", serif;
+  --font-display: "The Seasons", "Cormorant Garamond", "Playfair Display", serif;
   --font-script: "August Script", "Great Vibes", cursive;
-  --font-sans: "Sophia Pro", "Jost", system-ui, sans-serif;
-  --font-body: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Sofia Pro", "Montserrat", system-ui, sans-serif;
+  --font-body: "Sofia Pro", "Montserrat", system-ui, sans-serif;
 }
 
 /* August Script — self-hosted from public/fonts/ */
