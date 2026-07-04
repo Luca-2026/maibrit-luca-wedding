@@ -4,7 +4,7 @@
 
 import { webcrypto as crypto } from "node:crypto";
 
-const PASSWORD = process.env.PW || "ja-wir-zwei-2026";
+const PASSWORD = process.env.PW || "diesandhoffs";
 
 const content = {
   ablauf: [
