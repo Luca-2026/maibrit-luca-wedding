@@ -156,13 +156,11 @@ function Hero() {
   const dateScale = 1 - progress * 0.12;
   const dateBlur = progress * 6;
 
-  const florStart = 0.15; // Blume beginnt leicht verzögert
-  const florP = Math.max(0, Math.min(1, (progress - florStart) / (1 - florStart)));
+  const florStart = 0.2; // Blume beginnt, wenn Zahl schon deutlich schwächer wird
+  const florEnd = 0.85;  // Blume steht komplett, bevor Sticky freigibt
+  const florP = Math.max(0, Math.min(1, (progress - florStart) / (florEnd - florStart)));
   const florOpacity = florP;
   const florScale = 0.55 + florP * 0.55; // wächst von klein zu groß
-
-  // Intro-Text erscheint, sobald die Blume sichtbar wird
-  const introOpacity = Math.max(0, Math.min(1, (progress - 0.5) * 2));
 
   return (
     <header id="top" className="relative">
