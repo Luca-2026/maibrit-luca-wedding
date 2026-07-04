@@ -14,8 +14,8 @@ export const Route = createFileRoute("/")({
   component: WeddingPage,
 });
 
-// PLACEHOLDER: replace with real Formspree (or similar) endpoint before going live.
-const RSVP_ENDPOINT = "https://formspree.io/f/REPLACE_ME";
+// RSVP-Zieladresse: Antworten landen im Postfach der Braut.
+const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
 const SESSION_KEY = "mul-unlocked-content";
@@ -464,14 +464,22 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
     setStatus("sending");
     const form = e.currentTarget;
     const data = new FormData(form);
-    data.set("attending", attending);
+    const name = String(data.get("name") ?? "").trim();
+    const companions = String(data.get("companions") ?? "").trim();
+
     try {
-      const res = await fetch(RSVP_ENDPOINT, {
-        method: "POST",
-        body: data,
-        headers: { Accept: "application/json" },
-      });
-      if (!res.ok) throw new Error("failed");
+      const subject = `RSVP Hochzeit — ${name || "ohne Namen"} (${attending === "yes" ? "Zusage" : "Absage"})`;
+      const lines = [
+        `Name: ${name || "—"}`,
+        `Antwort: ${attending === "yes" ? "Ja, kommt gern" : "Leider nein"}`,
+        `Begleitung: ${companions || "—"}`,
+        "",
+        "— gesendet über maibritundluca.de",
+      ];
+      const body = lines.join("\n");
+      const href = `mailto:${RSVP_TO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      // Öffnet den Mail-Client der Gäste mit ausgefüllter Bestätigungsmail.
+      window.location.href = href;
       setStatus("ok");
       form.reset();
       setAttending("yes");
@@ -487,12 +495,25 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
         <strong className="text-bordeaux">{deadline}</strong> Bescheid, ob ihr
         dabei sein könnt.
       </p>
+      <p className="text-ink/70 mb-2 max-w-2xl text-sm">
+        Nach dem Absenden öffnet sich euer Mailprogramm mit einer fertigen
+        Bestätigung an{" "}
+        <a href={`mailto:${RSVP_TO_EMAIL}`} className="text-bordeaux underline">
+          {RSVP_TO_EMAIL}
+        </a>
+        {" "}— bitte einmal auf „Senden" klicken.
+      </p>
 
       {status === "ok" ? (
         <div className="mt-10 border border-olive/40 p-8 bg-muted text-center">
           <p className="script text-4xl text-rose mb-2">danke!</p>
           <p className="text-ink/80">
-            Eure Antwort ist bei uns angekommen. Wir freuen uns.
+            Falls sich euer Mailprogramm nicht geöffnet hat, schreibt uns bitte
+            direkt an{" "}
+            <a href={`mailto:${RSVP_TO_EMAIL}`} className="underline">
+              {RSVP_TO_EMAIL}
+            </a>
+            .
           </p>
         </div>
       ) : (
@@ -540,24 +561,16 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
             disabled={status === "sending"}
             className="caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-ink transition-colors disabled:opacity-60"
           >
-            {status === "sending" ? "Wird gesendet…" : "Antwort abschicken"}
+            {status === "sending" ? "Wird geöffnet…" : "Antwort abschicken"}
           </button>
 
           {status === "error" && (
             <p role="alert" className="text-bordeaux text-sm">
-              Das hat nicht geklappt. Bitte versucht es erneut oder schreibt uns
-              direkt an{" "}
-              <a href={`mailto:${email}`} className="underline">
-                {email}
+              Das hat nicht geklappt. Bitte schreibt uns direkt an{" "}
+              <a href={`mailto:${RSVP_TO_EMAIL}`} className="underline">
+                {RSVP_TO_EMAIL}
               </a>
               .
-            </p>
-          )}
-
-          {RSVP_ENDPOINT.includes("REPLACE_ME") && (
-            <p className="text-xs text-olive/80 italic">
-              ⚠︎ Platzhalter-Endpunkt aktiv. Vor Livegang RSVP_ENDPOINT in
-              src/routes/index.tsx durch echten Formspree-Link ersetzen.
             </p>
           )}
         </form>
