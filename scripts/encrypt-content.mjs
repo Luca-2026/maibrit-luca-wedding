@@ -8,22 +8,23 @@ const PASSWORD = process.env.PW || "diesandhoffs";
 
 const content = {
   ablauf: [
-    { time: "14:00", title: "Standesamtliche Trauung", where: "Köllenhof, Wachtberg-Ließem" },
-    { time: "16:30", title: "Gartenfest", where: "Bonn-Ückesdorf" },
+    { time: "13:45", title: "Ankommen der Gäste", where: "Bitte 15 Minuten vor der Trauung vor Ort sein" },
+    { time: "14:00", title: "Standesamtliche Trauung", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
+    { time: "16:30", title: "Gartenfest", where: "Kaspar-David-Friedrich-Straße 2, Bonn-Ückesdorf" },
   ],
   locations: [
     {
       label: "Trauung — 14:00",
-      name: "Köllenhof",
-      addressLines: ["[Straße + Nr.]", "53343 Wachtberg-Ließem"],
-      maps: "https://maps.google.com/?q=Köllenhof+Wachtberg-Ließem",
-      note: "Parkplätze sind vor Ort begrenzt vorhanden — Fahrgemeinschaften werden empfohlen.",
+      name: "Kulturzentrum Köllenhof",
+      addressLines: ["Köllenhofweg", "53343 Wachtberg-Ließem"],
+      maps: "https://maps.google.com/?q=Kulturzentrum+Köllenhof+Wachtberg-Ließem",
+      note: "Bitte 15 Minuten vor Beginn vor Ort sein. Parkplätze sind vor Ort begrenzt — Fahrgemeinschaften werden empfohlen.",
     },
     {
       label: "Gartenfest — ab 16:30",
-      name: "[Location Bonn-Ückesdorf]",
-      addressLines: ["[Straße + Nr.]", "53127 Bonn-Ückesdorf"],
-      maps: "https://maps.google.com/?q=Bonn-Ückesdorf",
+      name: "Gartenfest Bonn-Ückesdorf",
+      addressLines: ["Kaspar-David-Friedrich-Straße 2", "53127 Bonn-Ückesdorf"],
+      maps: "https://maps.google.com/?q=Kaspar-David-Friedrich-Stra%C3%9Fe+2,+53127+Bonn",
       note: "Parken in den umliegenden Seitenstraßen.",
     },
   ],
@@ -33,7 +34,7 @@ const content = {
     { name: "[Pension / B&B]", distance: "ca. 3 km zur Location", url: "#" },
   ],
   rsvpDeadline: "15. September 2026",
-  contactEmail: "hallo@maibritundluca.de",
+  contactEmail: "maibritbreuer@gmail.com",
 };
 
 const enc = new TextEncoder();
