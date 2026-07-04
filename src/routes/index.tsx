@@ -285,32 +285,17 @@ function Uebernachtung() {
 
 /* ---------------- DRESSCODE ---------------- */
 function Dresscode() {
-  const swatches = [
-    { hex: "#FFF5EB", label: "Cream" },
-    { hex: "#97637A", label: "Altrosa" },
-    { hex: "#4F132E", label: "Bordeaux" },
-    { hex: "#303F11", label: "Olive" },
-  ];
   return (
-    <Section id="dresscode" eyebrow="Was ihr tragt" title="Dresscode">
-      <p className="script text-4xl text-rose mb-8">Soft &amp; Golden Autumn</p>
-      <p className="text-ink/85 max-w-2xl mb-10">
-        Herbstlich, warm, festlich. Denkt an weiche Stoffe, gedeckte Töne und
-        goldenes Licht. <strong className="text-bordeaux">Bitte kein Weiß</strong> — das
-        heben wir uns für Maibrit auf.
+    <Section id="dresscode" eyebrow="Was ihr tragt" title="Kleidung">
+      <p className="text-ink/85 max-w-2xl text-lg leading-relaxed">
+        Es gibt keinen festen Dresscode — zieht an, worin ihr euch schön und
+        wohl fühlt. Wir wünschen uns eine{" "}
+        <span className="text-bordeaux">schicke, aber legere</span> Note.
       </p>
-      <ul className="flex flex-wrap gap-6">
-        {swatches.map((s) => (
-          <li key={s.hex} className="flex flex-col items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="block w-20 h-20 rounded-full border border-ink/10 shadow-sm"
-              style={{ backgroundColor: s.hex }}
-            />
-            <span className="caps text-xs text-olive">{s.label}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="mt-6 text-ink/85 max-w-2xl text-lg leading-relaxed">
+        Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
+        {" "}— das heben wir uns für Maibrit auf.
+      </p>
     </Section>
   );
 }
