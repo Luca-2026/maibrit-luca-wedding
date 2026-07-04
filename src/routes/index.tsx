@@ -76,12 +76,8 @@ function Hero() {
             <span className="h-px w-10 bg-olive" aria-hidden="true" />
             <p className="caps text-sm text-olive">Wir sagen ja</p>
           </div>
-          <h2 className="mt-6 display text-bordeaux text-5xl md:text-7xl">
-            Maibrit
-            <span className="script text-rose text-4xl md:text-5xl mx-3 align-middle">
-              &amp;
-            </span>
-            Luca
+          <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
+            Maibrit <span className="text-rose/60">&amp;</span> Luca
           </h2>
           <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/85">
             Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
