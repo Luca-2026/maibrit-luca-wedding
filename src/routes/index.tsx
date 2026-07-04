@@ -86,14 +86,14 @@ function Hero() {
           </p>
         </div>
 
-        <div className="relative md:absolute md:right-0 md:top-0 md:h-full md:w-[55%] pointer-events-none">
+        <div className="relative md:absolute md:right-0 md:top-0 md:h-full md:w-[45%] pointer-events-none flex justify-center md:justify-end">
           <img
             src={aquarell}
             alt=""
             aria-hidden="true"
-            width={1280}
-            height={1600}
-            className="w-full h-auto md:h-full md:object-cover md:object-left-bottom mix-blend-multiply"
+            width={2860}
+            height={5084}
+            className="h-[60vh] md:h-[90%] md:mt-8 w-auto object-contain mix-blend-multiply"
           />
         </div>
       </div>
