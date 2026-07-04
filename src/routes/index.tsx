@@ -131,8 +131,10 @@ function Hero() {
 
     function update() {
       raf = 0;
-      // Scroll-Distanz über die der Cross-Fade läuft: eine volle Viewport-Höhe.
-      const range = window.innerHeight;
+      // Scroll-Bühne: 80% Viewporthöhe fürs Crossfaden.
+      // Kurzer Puffer am Ende (~10% VH), damit die Blume voll steht,
+      // bevor die Sticky freigibt und der Intro-Text hochkommt.
+      const range = window.innerHeight * 0.8;
       const y = Math.max(0, Math.min(range, window.scrollY));
       setProgress(reduced ? 1 : y / range);
     }
@@ -154,18 +156,20 @@ function Hero() {
   const dateScale = 1 - progress * 0.12;
   const dateBlur = progress * 6;
 
-  const florStart = 0.15; // Blume beginnt leicht verzögert
-  const florP = Math.max(0, Math.min(1, (progress - florStart) / (1 - florStart)));
+  const florStart = 0.2; // Blume beginnt, wenn Zahl schon deutlich schwächer wird
+  const florEnd = 0.85;  // Blume steht komplett, bevor Sticky freigibt
+  const florP = Math.max(0, Math.min(1, (progress - florStart) / (florEnd - florStart)));
   const florOpacity = florP;
   const florScale = 0.55 + florP * 0.55; // wächst von klein zu groß
 
-  // Intro-Text erscheint, sobald die Blume sichtbar wird
-  const introOpacity = Math.max(0, Math.min(1, (progress - 0.5) * 2));
+  // Intro-Text erscheint, sobald die Blume komplett steht
+  const introOpacity = florP;
 
   return (
     <header id="top" className="relative">
-      {/* Doppelte Viewporthöhe = Scroll-Bühne für den Cross-Fade */}
-      <div className="relative h-[200vh]">
+      {/* Scroll-Bühne: 180vh hoch, Sticky-Kind 100vh → 80vh Scroll fürs Crossfade,
+          danach gleitet die Sticky sanft raus und der Intro-Text kommt hoch. */}
+      <div className="relative h-[180vh]">
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Datum — mittig, startet groß */}
           <div
