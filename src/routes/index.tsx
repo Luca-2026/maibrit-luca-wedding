@@ -109,9 +109,9 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
               Sperren
             </button>
           </>
-        ) : (
-          <span className="caps text-[10px] text-rose/70">Privat</span>
-        )}
+          <span className="display text-base md:text-lg text-rose">
+            Maibrit &amp; Luca
+          </span>
       </div>
     </nav>
   );
