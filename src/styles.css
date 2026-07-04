@@ -125,14 +125,41 @@
   font-weight: 400;
 }
 
+/* ─────────── Professional entrance animations ─────────── */
+@keyframes wed-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes wed-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes wed-fade-scale {
+  from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes wed-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.anim-fade-up   { opacity: 0; animation: wed-fade-up 1.1s cubic-bezier(.2,.7,.2,1) forwards; }
+.anim-fade-in   { opacity: 0; animation: wed-fade-in 1.4s ease-out forwards; }
+.anim-hero-date { opacity: 0; animation: wed-fade-scale 1.6s cubic-bezier(.2,.7,.2,1) 0.15s forwards; }
+.anim-hero-flor { opacity: 0; animation: wed-fade-scale 1.8s cubic-bezier(.2,.7,.2,1) 0.05s forwards; }
+.anim-float     { animation: wed-float 6s ease-in-out infinite; }
+
+.anim-delay-1 { animation-delay: 0.6s; }
+.anim-delay-2 { animation-delay: 0.9s; }
+.anim-delay-3 { animation-delay: 1.2s; }
+.anim-delay-4 { animation-delay: 1.5s; }
+
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.001ms !important;
   }
+  .anim-fade-up, .anim-fade-in, .anim-hero-date, .anim-hero-flor { opacity: 1 !important; }
 }
