@@ -12,8 +12,8 @@
  * 2. `PW='neuesPasswort' node scripts/encrypt-content.mjs` ausführen
  * 3. Die JSON-Ausgabe hier in `PROTECTED_PAYLOAD` einsetzen
  *
- * Aktuelles Platzhalter-Passwort: "wachtberg2026"
- * ⚠︎ Vor Versand der Einladungen ein starkes Passwort setzen.
+ * Aktueller Zugangscode: "ja-wir-zwei-2026"
+ * ⚠︎ Vor Versand der Einladungen ggf. anpassen und neu verschlüsseln.
  */
 
 export type ProtectedContent = {
