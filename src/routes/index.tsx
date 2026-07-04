@@ -14,8 +14,8 @@ export const Route = createFileRoute("/")({
   component: WeddingPage,
 });
 
-// PLACEHOLDER: replace with real Formspree (or similar) endpoint before going live.
-const RSVP_ENDPOINT = "https://formspree.io/f/REPLACE_ME";
+// RSVP-Zieladresse: Antworten landen im Postfach der Braut.
+const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
 const SESSION_KEY = "mul-unlocked-content";
