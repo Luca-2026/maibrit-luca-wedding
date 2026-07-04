@@ -166,8 +166,9 @@ function Hero() {
 
   return (
     <header id="top" className="relative">
-      {/* Doppelte Viewporthöhe = Scroll-Bühne für den Cross-Fade */}
-      <div className="relative h-[200vh]">
+      {/* Scroll-Bühne: 180vh hoch, Sticky-Kind 100vh → 80vh Scroll fürs Crossfade,
+          danach gleitet die Sticky sanft raus und der Intro-Text kommt hoch. */}
+      <div className="relative h-[180vh]">
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Datum — mittig, startet groß */}
           <div
