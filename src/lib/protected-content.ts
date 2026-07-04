@@ -38,11 +38,12 @@ export const PROTECTED_PAYLOAD = {
   iterations: 250000,
 } as const;
 
-function b64ToBytes(b64: string): Uint8Array {
+function b64ToBuffer(b64: string): ArrayBuffer {
   const bin = atob(b64);
-  const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return out;
+  const buf = new ArrayBuffer(bin.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+  return buf;
 }
 
 export async function decryptContent(password: string): Promise<ProtectedContent> {
