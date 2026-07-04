@@ -446,7 +446,7 @@ function Footer() {
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
         <div>
-          <p className="script text-5xl text-rose mb-2">
+          <p className="display text-5xl text-rose mb-2">
             Maibrit &amp; Luca
           </p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>
