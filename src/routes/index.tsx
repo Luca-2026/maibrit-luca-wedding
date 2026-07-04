@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import aquarellAsset from "@/assets/aquarell.png.asset.json";
 import datumAsset from "@/assets/datum.png.asset.json";
 import {
@@ -52,7 +52,7 @@ function WeddingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream text-ink overflow-x-hidden">
+    <div className="min-h-screen bg-cream text-ink overflow-x-clip">
       <Nav unlocked={!!content} onLock={handleLock} />
       <Hero />
       {content ? (
@@ -122,6 +122,7 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
 /* ---------------- HERO ---------------- */
 function Hero() {
   const [progress, setProgress] = useState(0); // 0 = date, 1 = flower
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let raf = 0;
@@ -131,11 +132,11 @@ function Hero() {
 
     function update() {
       raf = 0;
-      // Scroll-Bühne: 80% Viewporthöhe fürs Crossfaden.
-      // Kurzer Puffer am Ende (~10% VH), damit die Blume voll steht,
-      // bevor die Sticky freigibt und der Intro-Text hochkommt.
-      const range = window.innerHeight * 0.8;
-      const y = Math.max(0, Math.min(range, window.scrollY));
+      // Der Hero bleibt während des gesamten Crossfades sticky.
+      // Erst wenn progress = 1 erreicht ist, darf der normale Seiteninhalt hochscrollen.
+      const range = window.innerHeight * 0.92;
+      const stageTop = stageRef.current?.offsetTop ?? 0;
+      const y = Math.max(0, Math.min(range, window.scrollY - stageTop));
       setProgress(reduced ? 1 : y / range);
     }
     function onScroll() {
@@ -167,13 +168,12 @@ function Hero() {
 
   return (
     <header id="top" className="relative">
-      {/* Scroll-Bühne: 180vh hoch, Sticky-Kind 100vh → 80vh Scroll fürs Crossfade,
-          danach gleitet die Sticky sanft raus und der Intro-Text kommt hoch. */}
-      <div className="relative h-[180vh]">
-        <div className="sticky top-0 h-screen w-full overflow-hidden">
+      {/* Scroll-Bühne: Sticky bleibt fixiert, bis Zahl vollständig in Blume übergeblendet ist. */}
+      <div ref={stageRef} className="relative h-[192svh] min-h-[1120px]">
+        <div className="sticky top-0 h-svh w-full overflow-hidden">
           {/* Datum — mittig, startet groß */}
           <div
-            className="anim-hero-date absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{
               opacity: dateOpacity,
               transform: `scale(${dateScale})`,
@@ -182,13 +182,15 @@ function Hero() {
               willChange: "opacity, transform, filter",
             }}
           >
-            <img
-              src={datum}
-              alt="24. 10. 2026"
-              width={1058}
-              height={1920}
-              className="h-[68vh] md:h-[82vh] w-auto object-contain mix-blend-multiply"
-            />
+            <div className="anim-hero-date">
+              <img
+                src={datum}
+                alt="24. 10. 2026"
+                width={1058}
+                height={1920}
+                className="h-[68svh] md:h-[82svh] w-auto object-contain mix-blend-multiply"
+              />
+            </div>
           </div>
 
           {/* Blume — wächst mittig ein */}
@@ -208,7 +210,7 @@ function Hero() {
                 alt=""
                 width={2860}
                 height={5084}
-                className="h-[75vh] md:h-[90vh] w-auto object-contain mix-blend-multiply"
+                className="h-[75svh] md:h-[90svh] w-auto object-contain mix-blend-multiply"
               />
             </div>
           </div>
