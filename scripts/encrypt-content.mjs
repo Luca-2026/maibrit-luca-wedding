@@ -10,19 +10,20 @@ const content = {
   ablauf: [
     { time: "13:45", title: "Ankommen der Gäste", where: "Bitte 15 Minuten vor der Trauung vor Ort sein" },
     { time: "14:00", title: "Standesamtliche Trauung", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
-    { time: "16:30", title: "Gartenfest", where: "Kaspar-David-Friedrich-Straße 2, Bonn-Ückesdorf" },
+    { time: "14:30", title: "Sektempfang", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
+    { time: "15:30", title: "Party", where: "Im Anschluss geht es nach Bonn-Ückesdorf" },
   ],
   locations: [
     {
-      label: "Trauung — 14:00",
+      label: "Trauung & Sektempfang",
       name: "Kulturzentrum Köllenhof",
       addressLines: ["Köllenhofweg", "53343 Wachtberg-Ließem"],
       maps: "https://maps.google.com/?q=Kulturzentrum+Köllenhof+Wachtberg-Ließem",
       note: "Bitte 15 Minuten vor Beginn vor Ort sein. Parkplätze sind vor Ort begrenzt — Fahrgemeinschaften werden empfohlen.",
     },
     {
-      label: "Gartenfest — ab 16:30",
-      name: "Gartenfest Bonn-Ückesdorf",
+      label: "Party — ab 15:30",
+      name: "Party Bonn-Ückesdorf",
       addressLines: ["Kaspar-David-Friedrich-Straße 2", "53127 Bonn-Ückesdorf"],
       maps: "https://maps.google.com/?q=Kaspar-David-Friedrich-Stra%C3%9Fe+2,+53127+Bonn",
       note: "Parken in den umliegenden Seitenstraßen.",
@@ -68,3 +69,4 @@ console.log(
     2,
   ),
 );
+
