@@ -693,9 +693,7 @@ function LegalSections({ email }: { email: string }) {
         <section id="impressum">
           <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
           <p>
-            Maibrit [Nachname] &amp; Luca [Nachname]
-            <br />
-            [Straße + Nr.], [PLZ Ort]
+            Maibrit Breuer &amp; Luca Sandhoff
             <br />
             Kontakt: {email}
           </p>
