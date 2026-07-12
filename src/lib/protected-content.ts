@@ -26,9 +26,12 @@ export type ProtectedContent = {
     note: string;
   }[];
   hotels: { name: string; description: string; distance: string; url: string }[];
+  trauzeugen: { name: string; role: string; note?: string }[];
   rsvpDeadline: string;
   contactEmail: string;
+  contactPhone: string;
 };
+
 
 export const PROTECTED_PAYLOAD = {
   salt: "Ru+dhX5Vh9xEg3+pjjmdHQ==",
