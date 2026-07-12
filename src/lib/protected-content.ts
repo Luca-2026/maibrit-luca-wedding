@@ -25,7 +25,7 @@ export type ProtectedContent = {
     maps: string;
     note: string;
   }[];
-  hotels: { name: string; distance: string; url: string }[];
+  hotels: { name: string; description: string; distance: string; url: string }[];
   rsvpDeadline: string;
   contactEmail: string;
 };
