@@ -819,7 +819,8 @@ function Field({
 }
 
 /* ---------------- FOOTER (unlocked) ---------------- */
-function Footer({ email }: { email: string }) {
+function Footer({ email, phone }: { email: string; phone: string }) {
+  const telHref = "tel:" + phone.replace(/[^+\d]/g, "");
   return (
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
@@ -827,14 +828,24 @@ function Footer({ email }: { email: string }) {
           <p className="display text-5xl text-rose mb-2">Maibrit &amp; Luca</p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>
           <p className="mt-6 text-sm text-olive/70 max-w-sm">
-            Fragen? Schreibt uns:{" "}
+            Fragen? Schreibt oder ruft uns gern an:
+          </p>
+          <p className="mt-2 text-sm text-olive/85">
             <a
               href={`mailto:${email}`}
               className="text-bordeaux underline underline-offset-4 decoration-rose/60"
             >
               {email}
             </a>
+            <br />
+            <a
+              href={telHref}
+              className="text-bordeaux underline underline-offset-4 decoration-rose/60"
+            >
+              {phone}
+            </a>
           </p>
+
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
             <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
             <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
