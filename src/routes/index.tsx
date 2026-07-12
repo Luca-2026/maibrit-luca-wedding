@@ -363,11 +363,12 @@ function Section({
   title,
   children,
 }: {
-  id: string;
+  id?: string;
   eyebrow: string;
   title: string;
   children: React.ReactNode;
 }) {
+
   return (
     <section id={id} className="scroll-mt-20 py-20 md:py-28 anim-fade-up">
       <div className="mx-auto max-w-4xl px-5">
