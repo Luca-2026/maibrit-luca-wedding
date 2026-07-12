@@ -28,7 +28,7 @@ export const adminUnlock = createServerFn({ method: "POST" })
       cookie: {
         httpOnly: true,
         secure: true,
-        sameSite: "lax" as const,
+        sameSite: "none" as const,
         path: "/",
       },
     });
@@ -52,7 +52,7 @@ export const adminLock = createServerFn({ method: "POST" }).handler(async () => 
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "lax" as const,
+      sameSite: "none" as const,
       path: "/",
     },
   });
@@ -70,7 +70,7 @@ export const adminStatus = createServerFn({ method: "GET" }).handler(async () =>
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "lax" as const,
+      sameSite: "none" as const,
       path: "/",
     },
   });
@@ -97,7 +97,7 @@ export const listRsvps = createServerFn({ method: "GET" }).handler(async () => {
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "lax" as const,
+      sameSite: "none" as const,
       path: "/",
     },
   });
