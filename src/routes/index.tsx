@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
-const SESSION_KEY = "mul-unlocked-content-v6";
+const SESSION_KEY = "mul-unlocked-content-v7";
 
 function WeddingPage() {
   const [content, setContent] = useState<ProtectedContent | null>(null);
@@ -410,11 +410,11 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
 /* ---------------- ÜBERNACHTUNG ---------------- */
 function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
   return (
-    <Section id="uebernachtung" eyebrow="Bleibt über Nacht" title="Übernachtung">
+    <Section id="uebernachtung" eyebrow="Wer möchte, kann bleiben" title="Übernachtung">
       <p className="text-ink/80 mb-10 max-w-2xl">
-        Damit ihr entspannt feiern könnt, hier drei Vorschläge in der Nähe.
-        Bitte kümmert euch selbst um die Buchung — Kontingente haben wir nicht
-        reserviert.
+        Falls ihr den Abend entspannt ausklingen lassen und nicht mehr fahren
+        möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht – ganz
+        als Anregung. Bucht einfach direkt, was euch am besten gefällt.
       </p>
       <ul className="grid md:grid-cols-3 gap-6">
         {hotels.map((h) => (
@@ -423,9 +423,12 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
             className="border border-rose/30 p-6 bg-cream flex flex-col"
           >
             <h3 className="display text-2xl text-bordeaux mb-2">{h.name}</h3>
-            <p className="text-sm text-ink/70 mb-6">{h.distance}</p>
+            <p className="text-sm text-ink/70 mb-4">{h.description}</p>
+            <p className="text-sm text-ink/60 mb-6">{h.distance}</p>
             <a
               href={h.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-auto caps text-xs text-rose border-b border-rose self-start pb-1 hover:text-bordeaux hover:border-bordeaux transition-colors"
             >
               Zur Website
