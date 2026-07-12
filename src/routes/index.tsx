@@ -545,7 +545,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [attending, setAttending] = useState<"yes" | "no">("yes");
-  const [partySize, setPartySize] = useState(1);
+  const [companionNames, setCompanionNames] = useState<string[]>([]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -554,8 +554,13 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
     const form = e.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
-    const companions = String(data.get("companions") ?? "").trim();
     const message = String(data.get("message") ?? "").trim();
+    const cleanedCompanions =
+      attending === "yes"
+        ? companionNames.map((n) => n.trim()).filter(Boolean)
+        : [];
+    const partySize = attending === "yes" ? 1 + cleanedCompanions.length : 1;
+    const companions = cleanedCompanions.join(", ");
 
     if (!name) {
       setStatus("error");
@@ -568,7 +573,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       const { error } = await supabase.from("rsvps").insert({
         name,
         attending: attending === "yes",
-        party_size: attending === "yes" ? partySize : 1,
+        party_size: partySize,
         companions: companions || null,
         message: message || null,
       });
@@ -576,7 +581,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       setStatus("ok");
       form.reset();
       setAttending("yes");
-      setPartySize(1);
+      setCompanionNames([]);
     } catch (err) {
       setStatus("error");
       setErrorMsg(
@@ -585,6 +590,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       console.error(err);
     }
   }
+
 
   return (
     <Section id="rsvp" eyebrow="Antwort erbeten" title="RSVP">
