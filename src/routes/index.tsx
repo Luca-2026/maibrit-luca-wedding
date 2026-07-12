@@ -545,7 +545,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [attending, setAttending] = useState<"yes" | "no">("yes");
-  const [partySize, setPartySize] = useState(1);
+  const [companionNames, setCompanionNames] = useState<string[]>([]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -554,8 +554,13 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
     const form = e.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
-    const companions = String(data.get("companions") ?? "").trim();
     const message = String(data.get("message") ?? "").trim();
+    const cleanedCompanions =
+      attending === "yes"
+        ? companionNames.map((n) => n.trim()).filter(Boolean)
+        : [];
+    const partySize = attending === "yes" ? 1 + cleanedCompanions.length : 1;
+    const companions = cleanedCompanions.join(", ");
 
     if (!name) {
       setStatus("error");
@@ -568,7 +573,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       const { error } = await supabase.from("rsvps").insert({
         name,
         attending: attending === "yes",
-        party_size: attending === "yes" ? partySize : 1,
+        party_size: partySize,
         companions: companions || null,
         message: message || null,
       });
@@ -576,7 +581,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       setStatus("ok");
       form.reset();
       setAttending("yes");
-      setPartySize(1);
+      setCompanionNames([]);
     } catch (err) {
       setStatus("error");
       setErrorMsg(
@@ -585,6 +590,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       console.error(err);
     }
   }
+
 
   return (
     <Section id="rsvp" eyebrow="Antwort erbeten" title="RSVP">
@@ -651,41 +657,57 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
           </fieldset>
 
           {attending === "yes" && (
-            <>
-              <fieldset>
-                <legend className="caps text-xs text-olive mb-3">
-                  Anzahl Personen (inkl. dir)
-                </legend>
-                <div className="flex flex-wrap gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
+            <fieldset>
+              <legend className="caps text-xs text-olive mb-3">
+                Wer kommt mit?
+              </legend>
+              <p className="text-olive/70 text-sm mb-4">
+                Gib bitte die Namen aller weiteren Personen an, die dich
+                begleiten. Wenn du alleine kommst, lass das Feld einfach leer.
+              </p>
+              <div className="space-y-3">
+                {companionNames.map((val, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      value={val}
+                      onChange={(e) => {
+                        const next = [...companionNames];
+                        next[i] = e.target.value;
+                        setCompanionNames(next);
+                      }}
+                      placeholder={`Name der ${i + 1}. Begleitung`}
+                      className="flex-1 bg-transparent border-b border-rose/40 focus:border-bordeaux outline-none py-2 text-olive placeholder:text-olive/40"
+                    />
                     <button
                       type="button"
-                      key={n}
-                      onClick={() => setPartySize(n)}
-                      aria-pressed={partySize === n}
-                      className={`caps text-xs w-11 h-11 rounded-full border transition-colors ${
-                        partySize === n
-                          ? "bg-bordeaux text-cream border-bordeaux"
-                          : "border-rose/40 text-rose hover:border-bordeaux hover:text-bordeaux"
-                      }`}
+                      onClick={() =>
+                        setCompanionNames(
+                          companionNames.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      aria-label="Person entfernen"
+                      className="caps text-xs text-rose hover:text-bordeaux border-b border-rose/40 hover:border-bordeaux pb-0.5"
                     >
-                      {n}
+                      Entfernen
                     </button>
-                  ))}
-                </div>
-              </fieldset>
-
-              {partySize > 1 && (
-                <Field
-                  label={`Namen der Begleitung (${partySize - 1} weitere ${
-                    partySize - 1 === 1 ? "Person" : "Personen"
-                  })`}
-                  name="companions"
-                  as="textarea"
-                />
-              )}
-            </>
+                  </div>
+                ))}
+                {companionNames.length < 4 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCompanionNames([...companionNames, ""])
+                    }
+                    className="caps text-xs text-rose hover:text-bordeaux border-b border-rose/40 hover:border-bordeaux pb-0.5"
+                  >
+                    + Weitere Person hinzufügen
+                  </button>
+                )}
+              </div>
+            </fieldset>
           )}
+
 
           <Field
             label="Nachricht an uns (optional)"
