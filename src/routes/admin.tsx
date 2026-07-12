@@ -350,7 +350,7 @@ function Stat({
     >
       <p className="caps text-[10px] text-olive/70">{label}</p>
       <p
-        className={`display text-4xl mt-2 ${
+        className={`body text-5xl font-light mt-2 tabular-nums ${
           accent ? "text-bordeaux" : "text-rose"
         }`}
       >
