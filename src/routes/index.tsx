@@ -62,8 +62,12 @@ function WeddingPage() {
           <Anfahrt locations={content.locations} />
           <Uebernachtung hotels={content.hotels} />
           <Dresscode />
+          <Trauzeugen people={content.trauzeugen} />
+          <Wuensche />
+          <Geschenke />
           <Rsvp deadline={content.rsvpDeadline} email={content.contactEmail} />
-          <Footer email={content.contactEmail} />
+          <Footer email={content.contactEmail} phone={content.contactPhone} />
+
         </>
       ) : (
         <>
@@ -82,8 +86,11 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
     ["Anfahrt", "#anfahrt"],
     ["Übernachtung", "#uebernachtung"],
     ["Dresscode", "#dresscode"],
+    ["Trauzeugen", "#trauzeugen"],
+    ["Geschenke", "#geschenke"],
     ["RSVP", "#rsvp"],
   ];
+
   return (
     <nav
       aria-label="Hauptnavigation"
@@ -356,11 +363,12 @@ function Section({
   title,
   children,
 }: {
-  id: string;
+  id?: string;
   eyebrow: string;
   title: string;
   children: React.ReactNode;
 }) {
+
   return (
     <section id={id} className="scroll-mt-20 py-20 md:py-28 anim-fade-up">
       <div className="mx-auto max-w-4xl px-5">
@@ -514,7 +522,81 @@ function Dresscode() {
   );
 }
 
+/* ---------------- TRAUZEUGEN ---------------- */
+function Trauzeugen({ people }: { people: ProtectedContent["trauzeugen"] }) {
+  return (
+    <Section id="trauzeugen" eyebrow="An unserer Seite" title="Trauzeugen">
+      <p className="text-olive/80 mb-10 max-w-2xl">
+        Zwei besondere Menschen begleiten uns an diesem Tag ganz eng. Wenn ihr
+        Fragen habt, etwas nicht wisst oder einfach Hilfe braucht – sprecht sie
+        gern an.
+      </p>
+      <ul className="grid sm:grid-cols-2 gap-6 max-w-3xl">
+        {people.map((p) => (
+          <li
+            key={p.name}
+            className="border border-rose/30 p-8 bg-cream text-center"
+          >
+            <p className="caps text-[10px] text-rose tracking-[0.3em]">
+              {p.role}
+            </p>
+            <p className="display text-3xl text-bordeaux mt-3">{p.name}</p>
+            {p.note && (
+              <p className="mt-3 text-sm text-olive/70 italic">{p.note}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+/* ---------------- WÜNSCHE (keine Überraschungen) ---------------- */
+function Wuensche() {
+  return (
+    <Section eyebrow="Eine kleine Bitte" title="Ohne Überraschungen">
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          Wir möchten unseren Tag ganz bewusst so verbringen, wie wir ihn uns
+          vorstellen – <span className="text-rose">entspannt, nah und ohne
+          Programm</span>.
+        </p>
+        <p className="mt-4">
+          Darum unsere herzliche Bitte: <strong className="text-bordeaux">
+          bitte plant keine Spiele, Reden oder Überraschungen</strong>. Eure
+          Anwesenheit, ein gutes Gespräch und ein Tanz mit uns sind das
+          schönste Geschenk an diesem Abend.
+        </p>
+      </div>
+    </Section>
+  );
+}
+
+/* ---------------- GESCHENKE ---------------- */
+function Geschenke() {
+  return (
+    <Section id="geschenke" eyebrow="Falls ihr fragen mögt" title="Geschenke">
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          Das größte Geschenk ist, dass ihr diesen Tag mit uns feiert.
+        </p>
+        <p className="mt-4">
+          Wer uns darüber hinaus etwas mitgeben möchte: Wir sparen auf unsere{" "}
+          <span className="text-rose">Flitterwochen</span> und freuen uns über
+          einen kleinen Beitrag in unsere gemeinsame Reisekasse – gern in einem
+          schönen Umschlag am Hochzeitstag.
+        </p>
+        <p className="mt-4 italic text-olive/70">
+          Vielen lieben Dank – wir freuen uns riesig auf jede Erinnerung, die
+          wir mit euch mit nach Hause nehmen dürfen.
+        </p>
+      </div>
+    </Section>
+  );
+}
+
 /* ---------------- RSVP ---------------- */
+
 function Rsvp({ deadline, email }: { deadline: string; email: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -737,7 +819,8 @@ function Field({
 }
 
 /* ---------------- FOOTER (unlocked) ---------------- */
-function Footer({ email }: { email: string }) {
+function Footer({ email, phone }: { email: string; phone: string }) {
+  const telHref = "tel:" + phone.replace(/[^+\d]/g, "");
   return (
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
@@ -745,14 +828,24 @@ function Footer({ email }: { email: string }) {
           <p className="display text-5xl text-rose mb-2">Maibrit &amp; Luca</p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>
           <p className="mt-6 text-sm text-olive/70 max-w-sm">
-            Fragen? Schreibt uns:{" "}
+            Fragen? Schreibt oder ruft uns gern an:
+          </p>
+          <p className="mt-2 text-sm text-olive/85">
             <a
               href={`mailto:${email}`}
               className="text-bordeaux underline underline-offset-4 decoration-rose/60"
             >
               {email}
             </a>
+            <br />
+            <a
+              href={telHref}
+              className="text-bordeaux underline underline-offset-4 decoration-rose/60"
+            >
+              {phone}
+            </a>
           </p>
+
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
             <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
             <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
