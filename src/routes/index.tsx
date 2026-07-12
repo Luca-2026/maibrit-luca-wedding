@@ -443,16 +443,39 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
 /* ---------------- DRESSCODE ---------------- */
 function Dresscode() {
   return (
-    <Section id="dresscode" eyebrow="Was ihr tragt" title="Kleidung">
-      <p className="text-olive/85 max-w-2xl text-lg leading-relaxed">
-        Es gibt keinen festen Dresscode — zieht an, worin ihr euch schön und
-        wohl fühlt. Wir wünschen uns eine{" "}
-        <span className="text-bordeaux">schicke, aber legere</span> Note.
-      </p>
-      <p className="mt-6 text-olive/85 max-w-2xl text-lg leading-relaxed">
-        Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
-        {" "}— das heben wir uns für Maibrit auf.
-      </p>
+    <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Kleidung">
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          <span className="text-rose">Leger, aber schick</span> – zieht an,
+          worin ihr euch wohlfühlt und den Tag genießen könnt.
+        </p>
+        <p className="mt-4">
+          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>,
+          {" "}das bleibt der Braut vorbehalten.
+        </p>
+        <p className="mt-4">
+          Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren –
+          ein schönes Extra, aber definitiv kein Muss.
+        </p>
+      </div>
+
+      <div className="mt-10 flex flex-wrap items-start gap-8">
+        <div className="flex flex-col items-center gap-2">
+          <div
+            className="h-11 w-11 rounded-full shadow-sm"
+            style={{ backgroundColor: "#97637A" }}
+            aria-hidden="true"
+          />
+          <span className="caps text-[10px] text-olive/80">Altrosa</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <div
+            className="h-11 w-11 rounded-full bg-olive shadow-sm"
+            aria-hidden="true"
+          />
+          <span className="caps text-[10px] text-olive/80">Olivgrün</span>
+        </div>
+      </div>
     </Section>
   );
 }
