@@ -8,10 +8,13 @@ const PASSWORD = process.env.PW || "diesandhoffs";
 
 const content = {
   ablauf: [
-    { time: "13:45", title: "Ankommen der Gäste", where: "Bitte 15 Minuten vor der Trauung vor Ort sein" },
-    { time: "14:00", title: "Standesamtliche Trauung", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
-    { time: "14:30", title: "Sektempfang", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
-    { time: "15:30", title: "ANKOMMEN IN DER LOCATION", where: "Hochzeitsfeier in der Caspar-David-Friedrich-Straße in Bonn Ückesdorf\u00a0" },
+    { time: "13:45", title: "ANKOMMEN DER GÄSTE", where: "Bitte 15 Minuten vor der Trauung vor Ort sein" },
+    { time: "14:00", title: "STANDESAMTLICHE TRAUUNG", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
+    { time: "14:30", title: "SEKTEMPFANG", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
+    { time: "15.00", title: "ANKOMMEN IN DER LOCATION", where: "Hochzeitsfeier in der Caspar-David-Friedrich-Straße in Bonn Ückesdorf" },
+    { time: "16:00", title: "KAFFEE & HOCHZEITSTORTE", where: "" },
+    { time: "18:00", title: "ABENDESSEN", where: "" },
+    { time: "IM ANSCHLUSS", title: "PARTY", where: "" },
   ],
   locations: [
     {
