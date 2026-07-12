@@ -16,7 +16,6 @@
   --color-rose: var(--rose);
   --color-bordeaux: var(--bordeaux);
   --color-olive: var(--olive);
-  --color-ink: var(--ink);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-primary: var(--primary);
@@ -51,19 +50,17 @@
 :root {
   --radius: 0.25rem;
 
-  /* Palette sampled from the Save-the-Date card so screen matches print */
+  /* Palette: nur vier Farben — Beige, Dunkel-Bordeaux, Altrosa, Olivgrün */
   --cream: #f3f0e8;    /* warm neutral background */
   --rose: #a87878;     /* headline / signature rose (sampled from date graphic) */
   --bordeaux: #4f132e; /* dahlia accent */
-  --olive: #303f11;    /* foliage accent */
-  --ink: #303f11;      /* body text — olive green */
-
+  --olive: #303f11;    /* foliage + body text */
 
   --background: var(--cream);
-  --foreground: var(--ink);
+  --foreground: var(--olive);
 
   --card: var(--cream);
-  --card-foreground: var(--ink);
+  --card-foreground: var(--olive);
   --primary: var(--bordeaux);
   --primary-foreground: var(--cream);
   --secondary: var(--rose);
@@ -78,7 +75,7 @@
   --input: color-mix(in srgb, var(--rose) 40%, transparent);
   --ring: var(--rose);
   --popover: var(--cream);
-  --popover-foreground: var(--ink);
+  --popover-foreground: var(--olive);
 }
 
 @layer base {
@@ -92,7 +89,7 @@
 
   body {
     background-color: var(--color-cream);
-    color: var(--color-ink);
+    color: var(--color-olive);
     font-family: var(--font-body);
     font-size: 1.0625rem;
     line-height: 1.6;
