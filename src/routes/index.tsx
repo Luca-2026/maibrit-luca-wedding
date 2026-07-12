@@ -52,7 +52,7 @@ function WeddingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream text-ink overflow-x-clip">
+    <div className="min-h-screen bg-cream text-olive overflow-x-clip">
       <Nav unlocked={!!content} onLock={handleLock} />
       <Hero />
       {content ? (
@@ -241,7 +241,7 @@ function Hero() {
         <h2 className="mt-6 display text-rose text-5xl md:text-7xl">
           Maibrit &amp; Luca
         </h2>
-        <p className="mt-8 max-w-md mx-auto text-lg leading-relaxed text-ink/85">
+        <p className="mt-8 max-w-md mx-auto text-lg leading-relaxed text-olive/85">
           Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
           wünschen uns, dass ihr an unserer Seite seid, wenn wir am
           24. Oktober 2026 ja sagen.
@@ -279,7 +279,7 @@ function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
         <h2 id="login-heading" className="display text-rose text-3xl md:text-4xl mb-4">
           Bitte einloggen
         </h2>
-        <p className="text-sm text-ink/80 mb-8 leading-relaxed">
+        <p className="text-sm text-olive/80 mb-8 leading-relaxed">
           Alle Details zu Ablauf, Location und Anfahrt sind nur für unsere Gäste
           sichtbar. Bitte gebt den Code ein, den ihr auf eurer Einladung findet.
         </p>
@@ -296,7 +296,7 @@ function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
                 if (status === "error") setStatus("idle");
               }}
               placeholder="Zugangscode"
-              className="w-full bg-cream border border-rose/40 px-4 py-3 text-center text-ink placeholder:text-rose/50 focus:border-bordeaux focus:outline-none transition-colors rounded-sm"
+              className="w-full bg-cream border border-rose/40 px-4 py-3 text-center text-olive placeholder:text-rose/50 focus:border-bordeaux focus:outline-none transition-colors rounded-sm"
               aria-invalid={status === "error"}
               aria-describedby={status === "error" ? "gate-error" : undefined}
             />
@@ -304,7 +304,7 @@ function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
           <button
             type="submit"
             disabled={status === "checking" || !password.trim()}
-            className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-ink transition-colors disabled:opacity-60"
+            className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
             {status === "checking" ? "Prüfen…" : "Einloggen"}
           </button>
@@ -367,7 +367,7 @@ function Ablauf({ items }: { items: ProtectedContent["ablauf"] }) {
           </li>
         ))}
       </ul>
-      <p className="mt-10 text-ink/70 italic">
+      <p className="mt-10 text-olive/70 italic">
         Den ausführlichen Ablauf findet ihr auf eurer Einladungskarte.
       </p>
     </Section>
@@ -383,7 +383,7 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
           <article key={loc.name} className="border-t border-rose/25 pt-6">
             <p className="caps text-xs text-olive mb-3">{loc.label}</p>
             <h3 className="display text-3xl text-bordeaux mb-3">{loc.name}</h3>
-            <address className="not-italic text-ink/85 mb-4">
+            <address className="not-italic text-olive/85 mb-4">
               {loc.addressLines.map((line, i) => (
                 <span key={i}>
                   {line}
@@ -391,7 +391,7 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
                 </span>
               ))}
             </address>
-            <p className="text-sm text-ink/70 mb-4">{loc.note}</p>
+            <p className="text-sm text-olive/70 mb-4">{loc.note}</p>
             <a
               href={loc.maps}
               target="_blank"
@@ -411,7 +411,7 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
 function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
   return (
     <Section id="uebernachtung" eyebrow="Wer möchte, kann bleiben" title="Übernachtung">
-      <p className="text-ink/80 mb-10 max-w-2xl">
+      <p className="text-olive/80 mb-10 max-w-2xl">
         Falls ihr den Abend entspannt ausklingen lassen und nicht mehr fahren
         möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht – ganz
         als Anregung. Bucht einfach direkt, was euch am besten gefällt.
@@ -423,8 +423,8 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
             className="border border-rose/30 p-6 bg-cream flex flex-col"
           >
             <h3 className="display text-2xl text-bordeaux mb-2">{h.name}</h3>
-            <p className="text-sm text-ink/70 mb-4">{h.description}</p>
-            <p className="text-sm text-ink/60 mb-6">{h.distance}</p>
+            <p className="text-sm text-olive/70 mb-4">{h.description}</p>
+            <p className="text-sm text-olive/60 mb-6">{h.distance}</p>
             <a
               href={h.url}
               target="_blank"
@@ -444,12 +444,12 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
 function Dresscode() {
   return (
     <Section id="dresscode" eyebrow="Was ihr tragt" title="Kleidung">
-      <p className="text-ink/85 max-w-2xl text-lg leading-relaxed">
+      <p className="text-olive/85 max-w-2xl text-lg leading-relaxed">
         Es gibt keinen festen Dresscode — zieht an, worin ihr euch schön und
         wohl fühlt. Wir wünschen uns eine{" "}
         <span className="text-bordeaux">schicke, aber legere</span> Note.
       </p>
-      <p className="mt-6 text-ink/85 max-w-2xl text-lg leading-relaxed">
+      <p className="mt-6 text-olive/85 max-w-2xl text-lg leading-relaxed">
         Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
         {" "}— das heben wir uns für Maibrit auf.
       </p>
@@ -493,12 +493,12 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
 
   return (
     <Section id="rsvp" eyebrow="Antwort erbeten" title="RSVP">
-      <p className="text-ink/85 mb-2 max-w-2xl">
+      <p className="text-olive/85 mb-2 max-w-2xl">
         Bitte gebt uns bis zum{" "}
         <strong className="text-bordeaux">{deadline}</strong> Bescheid, ob ihr
         dabei sein könnt.
       </p>
-      <p className="text-ink/70 mb-2 max-w-2xl text-sm">
+      <p className="text-olive/70 mb-2 max-w-2xl text-sm">
         Nach dem Absenden öffnet sich euer Mailprogramm mit einer fertigen
         Bestätigung an{" "}
         <a href={`mailto:${RSVP_TO_EMAIL}`} className="text-bordeaux underline">
@@ -510,7 +510,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
       {status === "ok" ? (
         <div className="mt-10 border border-olive/40 p-8 bg-muted text-center">
           <p className="script text-4xl text-rose mb-2">danke!</p>
-          <p className="text-ink/80">
+          <p className="text-olive/80">
             Falls sich euer Mailprogramm nicht geöffnet hat, schreibt uns bitte
             direkt an{" "}
             <a href={`mailto:${RSVP_TO_EMAIL}`} className="underline">
@@ -562,7 +562,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-ink transition-colors disabled:opacity-60"
+            className="caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
             {status === "sending" ? "Wird geöffnet…" : "Antwort abschicken"}
           </button>
@@ -594,7 +594,7 @@ function Field({
   as?: "input" | "textarea";
 }) {
   const shared =
-    "w-full bg-transparent border-b border-rose/50 py-3 text-ink placeholder:text-rose/50 focus:border-bordeaux focus:outline-none transition-colors";
+    "w-full bg-transparent border-b border-rose/50 py-3 text-olive placeholder:text-rose/50 focus:border-bordeaux focus:outline-none transition-colors";
   return (
     <label className="block">
       <span className="caps text-xs text-olive block mb-2">
@@ -618,7 +618,7 @@ function Footer({ email }: { email: string }) {
         <div>
           <p className="display text-5xl text-rose mb-2">Maibrit &amp; Luca</p>
           <p className="caps text-xs text-olive">24 · 10 · 2026</p>
-          <p className="mt-6 text-sm text-ink/70 max-w-sm">
+          <p className="mt-6 text-sm text-olive/70 max-w-sm">
             Fragen? Schreibt uns:{" "}
             <a
               href={`mailto:${email}`}
@@ -667,7 +667,7 @@ function PublicFooter() {
 function LegalSections({ email }: { email: string }) {
   return (
     <div className="border-t border-rose/20">
-      <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-ink/75">
+      <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-olive/75">
         <section id="impressum">
           <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
           <p>
