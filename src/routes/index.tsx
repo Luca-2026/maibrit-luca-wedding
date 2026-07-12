@@ -446,15 +446,14 @@ function Dresscode() {
     <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Kleidung">
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
-          <span className="text-rose">Leger, aber schick</span> – zieht an,
-          worin ihr euch wohlfühlt und den Tag genießen könnt.
+          <span className="text-rose">Leger, aber schick.</span><br />
+          Zieht an, worin ihr euch wohlfühlt und den Tag genießen könnt.
         </p>
         <p className="mt-4">
-          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>,
-          {" "}das bleibt der Braut vorbehalten.
+          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
         </p>
         <p className="mt-4">
-          Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren –
+          Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren,
           ein schönes Extra, aber definitiv kein Muss.
         </p>
       </div>
