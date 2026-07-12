@@ -39,9 +39,15 @@ const content = {
     { name: "Platzhirsch Hotel", description: "Renoviert und zentral in Duisdorf, Restaurants direkt vor der Tür.", distance: "ca. 4 km zur Location", url: "https://www.google.com/search?kgmid=/g/11j50ld301&hl=de-DE&q=Platzhirsch+Hotel&shem=epsd1,rimspwouoe&shndl=17&source=sh/x/kp/osrp/m5/1&kgs=a03df7407529b292&utm_source=epsd1,rimspwouoe,sh/x/kp/osrp/m5/1" },
     { name: "B&B Hotel Bonn-West", description: "Günstig und unkompliziert, verschiedene Zimmertypen inkl. Familienzimmer.", distance: "ca. 7 km zur Location", url: "https://www.google.com/search?kgmid=/g/12ml2ypyk&hl=de-DE&q=B%26B+HOTEL+Bonn-West&shem=epsd1,rimspwouoe&shndl=17&source=sh/x/kp/osrp/m5/1&kgs=ec27b4ff37e7d097&utm_source=epsd1,rimspwouoe,sh/x/kp/osrp/m5/1" },
   ],
+  trauzeugen: [
+    { name: "Trauzeugin", role: "Trauzeugin von Maibrit", note: "" },
+    { name: "Trauzeuge", role: "Trauzeuge von Luca", note: "" },
+  ],
   rsvpDeadline: "15. September 2026",
   contactEmail: "maibritbreuer@gmail.com",
+  contactPhone: "+49 000 0000000",
 };
+
 
 const enc = new TextEncoder();
 const salt = crypto.getRandomValues(new Uint8Array(16));
