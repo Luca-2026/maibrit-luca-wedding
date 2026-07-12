@@ -62,8 +62,12 @@ function WeddingPage() {
           <Anfahrt locations={content.locations} />
           <Uebernachtung hotels={content.hotels} />
           <Dresscode />
+          <Trauzeugen people={content.trauzeugen} />
+          <Wuensche />
+          <Geschenke />
           <Rsvp deadline={content.rsvpDeadline} email={content.contactEmail} />
-          <Footer email={content.contactEmail} />
+          <Footer email={content.contactEmail} phone={content.contactPhone} />
+
         </>
       ) : (
         <>
