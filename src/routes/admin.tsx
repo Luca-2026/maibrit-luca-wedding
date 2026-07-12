@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import {
   adminLock,
-  adminStatus,
   adminUnlock,
   listRsvps,
   type RsvpRow,
@@ -20,7 +19,6 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const status = useServerFn(adminStatus);
   const unlock = useServerFn(adminUnlock);
   const lock = useServerFn(adminLock);
   const list = useServerFn(listRsvps);
@@ -46,11 +44,21 @@ function AdminPage() {
   }
 
   useEffect(() => {
-    (async () => {
-      const s = await status();
-      setUnlocked(s.unlocked);
-      if (s.unlocked) await refresh();
-    })().catch((e) => setError((e as Error).message));
+    try {
+      const primed = window.sessionStorage.getItem("mul-admin-primed");
+      if (primed) {
+        window.sessionStorage.removeItem("mul-admin-primed");
+        const parsed = JSON.parse(primed) as { rows?: RsvpRow[]; t?: number };
+        if (parsed.t && Date.now() - parsed.t < 60_000) {
+          setUnlocked(true);
+          setRows(parsed.rows ?? []);
+          return;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    refresh().catch((e) => setError((e as Error).message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -64,7 +72,8 @@ function AdminPage() {
         setError("Passwort stimmt nicht.");
       } else {
         setPw("");
-        await refresh();
+        setUnlocked(true);
+        setRows(res.rows);
       }
     } catch (e) {
       setError((e as Error).message);
