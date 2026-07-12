@@ -299,43 +299,33 @@ function AdminPage() {
                       <th className="px-4 py-3">Begleitung</th>
                       <th className="px-4 py-3">Nachricht</th>
                     </tr>
-                  </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr
-                    key={r.id}
-                    className="border-t border-rose/15 align-top"
-                  >
-                    <td className="px-4 py-3 whitespace-nowrap text-olive/70">
-                      {new Date(r.created_at).toLocaleString("de-DE", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
-                    </td>
-                    <td className="px-4 py-3 font-medium">{r.name}</td>
-                    <td className="px-4 py-3">
-                      {r.attending ? (
-                        <span className="caps text-[10px] px-2 py-1 bg-olive text-cream">
-                          Zusage
-                        </span>
-                      ) : (
-                        <span className="caps text-[10px] px-2 py-1 bg-bordeaux text-cream">
-                          Absage
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">{r.party_size}</td>
-                    <td className="px-4 py-3 whitespace-pre-wrap text-olive/80">
-                      {r.companions || "—"}
-                    </td>
-                    <td className="px-4 py-3 whitespace-pre-wrap text-olive/80">
-                      {r.message || "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  <tbody>
+                    {rows.map((r) => (
+                      <tr key={r.id} className="border-t border-rose/15 align-top">
+                        <td className="px-4 py-3 whitespace-nowrap text-olive/70">
+                          {new Date(r.created_at).toLocaleString("de-DE", {
+                            dateStyle: "short",
+                            timeStyle: "short",
+                          })}
+                        </td>
+                        <td className="px-4 py-3 font-medium">{r.name}</td>
+                        <td className="px-4 py-3">
+                          {r.attending ? (
+                            <span className="caps text-[10px] px-2 py-1 bg-olive text-cream">Zusage</span>
+                          ) : (
+                            <span className="caps text-[10px] px-2 py-1 bg-bordeaux text-cream">Absage</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">{r.party_size}</td>
+                        <td className="px-4 py-3 whitespace-pre-wrap text-olive/80">{r.companions || "—"}</td>
+                        <td className="px-4 py-3 whitespace-pre-wrap text-olive/80">{r.message || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </>
         )}
       </main>
     </div>
