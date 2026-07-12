@@ -33,7 +33,13 @@ export const adminUnlock = createServerFn({ method: "POST" })
       },
     });
     await session.update({ unlocked: true });
-    return { ok: true as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("rsvps")
+      .select("id, created_at, name, attending, party_size, companions, message")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return { ok: true as const, rows: (rows ?? []) as RsvpRow[] };
   });
 
 export const adminLock = createServerFn({ method: "POST" }).handler(async () => {
