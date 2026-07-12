@@ -139,6 +139,17 @@ function AdminPage() {
   const yes = rows.filter((r) => r.attending);
   const no = rows.filter((r) => !r.attending);
   const yesGuests = yes.reduce((n, r) => n + (r.party_size || 1), 0);
+  const allYesGuests: { name: string; from: string }[] = yes.flatMap((r) => {
+    const list: { name: string; from: string }[] = [{ name: r.name, from: r.name }];
+    if (r.companions) {
+      const extras = r.companions
+        .split(/[,\n;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      for (const c of extras) list.push({ name: c, from: r.name });
+    }
+    return list;
+  });
 
   return (
     <div className="min-h-screen bg-cream text-olive">
