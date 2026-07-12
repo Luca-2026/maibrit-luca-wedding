@@ -44,6 +44,20 @@ function AdminPage() {
   }
 
   useEffect(() => {
+    try {
+      const primed = window.sessionStorage.getItem("mul-admin-primed");
+      if (primed) {
+        window.sessionStorage.removeItem("mul-admin-primed");
+        const parsed = JSON.parse(primed) as { rows?: RsvpRow[]; t?: number };
+        if (parsed.t && Date.now() - parsed.t < 60_000) {
+          setUnlocked(true);
+          setRows(parsed.rows ?? []);
+          return;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
     refresh().catch((e) => setError((e as Error).message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
