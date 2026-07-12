@@ -14,8 +14,7 @@ export const Route = createFileRoute("/")({
   component: WeddingPage,
 });
 
-// RSVP-Zieladresse: Antworten landen im Postfach der Braut.
-const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
+// RSVP-Antworten werden in Lovable Cloud gespeichert und im Admin-Bereich angezeigt.
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
 const SESSION_KEY = "mul-unlocked-content-v10";
@@ -482,34 +481,46 @@ function Dresscode() {
 /* ---------------- RSVP ---------------- */
 function Rsvp({ deadline, email }: { deadline: string; email: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [attending, setAttending] = useState<"yes" | "no">("yes");
+  const [partySize, setPartySize] = useState(1);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("sending");
+    setErrorMsg(null);
     const form = e.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
     const companions = String(data.get("companions") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
+    if (!name) {
+      setStatus("error");
+      setErrorMsg("Bitte gebt euren Namen an.");
+      return;
+    }
 
     try {
-      const subject = `RSVP Hochzeit — ${name || "ohne Namen"} (${attending === "yes" ? "Zusage" : "Absage"})`;
-      const lines = [
-        `Name: ${name || "—"}`,
-        `Antwort: ${attending === "yes" ? "Ja, kommt gern" : "Leider nein"}`,
-        `Begleitung: ${companions || "—"}`,
-        "",
-        "— gesendet über maibritundluca.de",
-      ];
-      const body = lines.join("\n");
-      const href = `mailto:${RSVP_TO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      // Öffnet den Mail-Client der Gäste mit ausgefüllter Bestätigungsmail.
-      window.location.href = href;
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.from("rsvps").insert({
+        name,
+        attending: attending === "yes",
+        party_size: attending === "yes" ? partySize : 1,
+        companions: companions || null,
+        message: message || null,
+      });
+      if (error) throw error;
       setStatus("ok");
       form.reset();
       setAttending("yes");
-    } catch {
+      setPartySize(1);
+    } catch (err) {
       setStatus("error");
+      setErrorMsg(
+        "Das hat leider nicht geklappt. Bitte versucht es noch einmal oder schreibt uns eine Mail.",
+      );
+      console.error(err);
     }
   }
 
@@ -521,25 +532,27 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
         dabei sein könnt.
       </p>
       <p className="text-olive/70 mb-2 max-w-2xl text-sm">
-        Nach dem Absenden öffnet sich euer Mailprogramm mit einer fertigen
-        Bestätigung an{" "}
-        <a href={`mailto:${RSVP_TO_EMAIL}`} className="text-bordeaux underline">
-          {RSVP_TO_EMAIL}
+        Bei Rückfragen erreicht ihr uns unter{" "}
+        <a href={`mailto:${email}`} className="text-bordeaux underline">
+          {email}
         </a>
-        {" "}— bitte einmal auf „Senden" klicken.
+        .
       </p>
 
       {status === "ok" ? (
-        <div className="mt-10 border border-olive/40 p-8 bg-muted text-center">
+        <div className="mt-10 border border-olive/40 p-8 bg-muted text-center max-w-xl">
           <p className="script text-4xl text-rose mb-2">danke!</p>
           <p className="text-olive/80">
-            Falls sich euer Mailprogramm nicht geöffnet hat, schreibt uns bitte
-            direkt an{" "}
-            <a href={`mailto:${RSVP_TO_EMAIL}`} className="underline">
-              {RSVP_TO_EMAIL}
-            </a>
-            .
+            Eure Antwort ist bei uns angekommen. Wir freuen uns sehr, von euch
+            zu hören.
           </p>
+          <button
+            type="button"
+            onClick={() => setStatus("idle")}
+            className="mt-6 caps text-xs text-rose border-b border-rose pb-1 hover:text-bordeaux hover:border-bordeaux"
+          >
+            Weitere Antwort abschicken
+          </button>
         </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-10 space-y-8 max-w-xl">
@@ -575,9 +588,46 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
             </div>
           </fieldset>
 
+          {attending === "yes" && (
+            <>
+              <fieldset>
+                <legend className="caps text-xs text-olive mb-3">
+                  Anzahl Personen (inkl. dir)
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      type="button"
+                      key={n}
+                      onClick={() => setPartySize(n)}
+                      aria-pressed={partySize === n}
+                      className={`caps text-xs w-11 h-11 rounded-full border transition-colors ${
+                        partySize === n
+                          ? "bg-bordeaux text-cream border-bordeaux"
+                          : "border-rose/40 text-rose hover:border-bordeaux hover:text-bordeaux"
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              {partySize > 1 && (
+                <Field
+                  label={`Namen der Begleitung (${partySize - 1} weitere ${
+                    partySize - 1 === 1 ? "Person" : "Personen"
+                  })`}
+                  name="companions"
+                  as="textarea"
+                />
+              )}
+            </>
+          )}
+
           <Field
-            label="Begleitung (Namen falls Plus 1)"
-            name="companions"
+            label="Nachricht an uns (optional)"
+            name="message"
             as="textarea"
           />
 
@@ -586,16 +636,12 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
             disabled={status === "sending"}
             className="caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
-            {status === "sending" ? "Wird geöffnet…" : "Antwort abschicken"}
+            {status === "sending" ? "Wird gesendet…" : "Antwort abschicken"}
           </button>
 
-          {status === "error" && (
+          {status === "error" && errorMsg && (
             <p role="alert" className="text-bordeaux text-sm">
-              Das hat nicht geklappt. Bitte schreibt uns direkt an{" "}
-              <a href={`mailto:${RSVP_TO_EMAIL}`} className="underline">
-                {RSVP_TO_EMAIL}
-              </a>
-              .
+              {errorMsg}
             </p>
           )}
         </form>
@@ -705,14 +751,12 @@ function LegalSections({ email }: { email: string }) {
             (noindex). Details zu Ort, Ablauf und Adressen liegen ausschließlich
             als AES-GCM-verschlüsseltes Chiffrat im Client-Bundle und werden
             erst nach Eingabe des Gäste-Codes lokal im Browser entschlüsselt —
-            es findet keine serverseitige Auth-Abfrage statt, das Passwort
-            verlässt euer Gerät nicht. Die per RSVP-Formular übermittelten
-            Angaben (Name, Zu-/Absage, Begleitung) verarbeiten wir
-            ausschließlich zur Organisation unserer Hochzeit und löschen sie
-            spätestens einen Monat nach dem 24.10.2026. Es findet kein
-            Tracking, keine Analyse und keine Weitergabe an Dritte statt —
-            abgesehen vom Formular-Dienstleister (Formspree), der die
-            Zustellung technisch abwickelt.
+            das Passwort verlässt euer Gerät nicht. Die per RSVP-Formular
+            übermittelten Angaben (Name, Zu-/Absage, Personenzahl, Begleitung,
+            optionale Nachricht) speichern wir in unserer verschlüsselten
+            Datenbank ausschließlich zur Organisation unserer Hochzeit und
+            löschen sie spätestens einen Monat nach dem 24.10.2026. Es findet
+            kein Tracking, keine Analyse und keine Weitergabe an Dritte statt.
           </p>
         </section>
       </div>
