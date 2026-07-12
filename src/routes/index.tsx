@@ -14,8 +14,7 @@ export const Route = createFileRoute("/")({
   component: WeddingPage,
 });
 
-// RSVP-Zieladresse: Antworten landen im Postfach der Braut.
-const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
+// RSVP-Antworten werden in Lovable Cloud gespeichert und im Admin-Bereich angezeigt.
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
 const SESSION_KEY = "mul-unlocked-content-v10";
@@ -752,14 +751,12 @@ function LegalSections({ email }: { email: string }) {
             (noindex). Details zu Ort, Ablauf und Adressen liegen ausschließlich
             als AES-GCM-verschlüsseltes Chiffrat im Client-Bundle und werden
             erst nach Eingabe des Gäste-Codes lokal im Browser entschlüsselt —
-            es findet keine serverseitige Auth-Abfrage statt, das Passwort
-            verlässt euer Gerät nicht. Die per RSVP-Formular übermittelten
-            Angaben (Name, Zu-/Absage, Begleitung) verarbeiten wir
-            ausschließlich zur Organisation unserer Hochzeit und löschen sie
-            spätestens einen Monat nach dem 24.10.2026. Es findet kein
-            Tracking, keine Analyse und keine Weitergabe an Dritte statt —
-            abgesehen vom Formular-Dienstleister (Formspree), der die
-            Zustellung technisch abwickelt.
+            das Passwort verlässt euer Gerät nicht. Die per RSVP-Formular
+            übermittelten Angaben (Name, Zu-/Absage, Personenzahl, Begleitung,
+            optionale Nachricht) speichern wir in unserer verschlüsselten
+            Datenbank ausschließlich zur Organisation unserer Hochzeit und
+            löschen sie spätestens einen Monat nach dem 24.10.2026. Es findet
+            kein Tracking, keine Analyse und keine Weitergabe an Dritte statt.
           </p>
         </section>
       </div>
