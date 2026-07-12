@@ -11,7 +11,7 @@ const content = {
     { time: "13:45", title: "Ankommen der Gäste", where: "Bitte 15 Minuten vor der Trauung vor Ort sein" },
     { time: "14:00", title: "Standesamtliche Trauung", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
     { time: "14:30", title: "Sektempfang", where: "Kulturzentrum Köllenhof, Wachtberg-Ließem" },
-    { time: "15:30", title: "Party", where: "Im Anschluss geht es nach Bonn-Ückesdorf" },
+    { time: "15:30", title: "ANKOMMEN IN DER LOCATION", where: "Hochzeitsfeier in der Caspar-David-Friedrich-Straße in Bonn Ückesdorf\u00a0" },
   ],
   locations: [
     {
