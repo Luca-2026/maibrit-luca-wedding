@@ -657,41 +657,57 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
           </fieldset>
 
           {attending === "yes" && (
-            <>
-              <fieldset>
-                <legend className="caps text-xs text-olive mb-3">
-                  Anzahl Personen (inkl. dir)
-                </legend>
-                <div className="flex flex-wrap gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
+            <fieldset>
+              <legend className="caps text-xs text-olive mb-3">
+                Wer kommt mit?
+              </legend>
+              <p className="text-olive/70 text-sm mb-4">
+                Gib bitte die Namen aller weiteren Personen an, die dich
+                begleiten. Wenn du alleine kommst, lass das Feld einfach leer.
+              </p>
+              <div className="space-y-3">
+                {companionNames.map((val, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      value={val}
+                      onChange={(e) => {
+                        const next = [...companionNames];
+                        next[i] = e.target.value;
+                        setCompanionNames(next);
+                      }}
+                      placeholder={`Name der ${i + 1}. Begleitung`}
+                      className="flex-1 bg-transparent border-b border-rose/40 focus:border-bordeaux outline-none py-2 text-olive placeholder:text-olive/40"
+                    />
                     <button
                       type="button"
-                      key={n}
-                      onClick={() => setPartySize(n)}
-                      aria-pressed={partySize === n}
-                      className={`caps text-xs w-11 h-11 rounded-full border transition-colors ${
-                        partySize === n
-                          ? "bg-bordeaux text-cream border-bordeaux"
-                          : "border-rose/40 text-rose hover:border-bordeaux hover:text-bordeaux"
-                      }`}
+                      onClick={() =>
+                        setCompanionNames(
+                          companionNames.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      aria-label="Person entfernen"
+                      className="caps text-xs text-rose hover:text-bordeaux border-b border-rose/40 hover:border-bordeaux pb-0.5"
                     >
-                      {n}
+                      Entfernen
                     </button>
-                  ))}
-                </div>
-              </fieldset>
-
-              {partySize > 1 && (
-                <Field
-                  label={`Namen der Begleitung (${partySize - 1} weitere ${
-                    partySize - 1 === 1 ? "Person" : "Personen"
-                  })`}
-                  name="companions"
-                  as="textarea"
-                />
-              )}
-            </>
+                  </div>
+                ))}
+                {companionNames.length < 4 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCompanionNames([...companionNames, ""])
+                    }
+                    className="caps text-xs text-rose hover:text-bordeaux border-b border-rose/40 hover:border-bordeaux pb-0.5"
+                  >
+                    + Weitere Person hinzufügen
+                  </button>
+                )}
+              </div>
+            </fieldset>
           )}
+
 
           <Field
             label="Nachricht an uns (optional)"
