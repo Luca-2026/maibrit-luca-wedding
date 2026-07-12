@@ -82,8 +82,11 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
     ["Anfahrt", "#anfahrt"],
     ["Übernachtung", "#uebernachtung"],
     ["Dresscode", "#dresscode"],
+    ["Trauzeugen", "#trauzeugen"],
+    ["Geschenke", "#geschenke"],
     ["RSVP", "#rsvp"],
   ];
+
   return (
     <nav
       aria-label="Hauptnavigation"
