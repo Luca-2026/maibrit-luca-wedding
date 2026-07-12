@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 // RSVP-Antworten werden in Lovable Cloud gespeichert und im Admin-Bereich angezeigt.
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
-const SESSION_KEY = "mul-unlocked-content-v11";
+const SESSION_KEY = "mul-unlocked-content-v12";
 
 function WeddingPage() {
   const [content, setContent] = useState<ProtectedContent | null>(null);
@@ -819,8 +819,9 @@ function Field({
 }
 
 /* ---------------- FOOTER (unlocked) ---------------- */
-function Footer({ email, phone }: { email: string; phone: string }) {
-  const telHref = "tel:" + phone.replace(/[^+\d]/g, "");
+function Footer({ email, phone }: { email: string; phone?: string }) {
+  const telHref = phone ? "tel:" + phone.replace(/[^+\d]/g, "") : "";
+
   return (
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
@@ -837,14 +838,19 @@ function Footer({ email, phone }: { email: string; phone: string }) {
             >
               {email}
             </a>
-            <br />
-            <a
-              href={telHref}
-              className="text-bordeaux underline underline-offset-4 decoration-rose/60"
-            >
-              {phone}
-            </a>
+            {phone && (
+              <>
+                <br />
+                <a
+                  href={telHref}
+                  className="text-bordeaux underline underline-offset-4 decoration-rose/60"
+                >
+                  {phone}
+                </a>
+              </>
+            )}
           </p>
+
 
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
             <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
