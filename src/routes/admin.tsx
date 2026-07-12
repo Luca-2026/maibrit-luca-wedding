@@ -299,6 +299,7 @@ function AdminPage() {
                       <th className="px-4 py-3">Begleitung</th>
                       <th className="px-4 py-3">Nachricht</th>
                     </tr>
+                  </thead>
                   <tbody>
                     {rows.map((r) => (
                       <tr key={r.id} className="border-t border-rose/15 align-top">
