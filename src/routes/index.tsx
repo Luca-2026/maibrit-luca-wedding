@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import aquarellAsset from "@/assets/aquarell.png.asset.json";
 import datumAsset from "@/assets/datum.png.asset.json";
@@ -6,6 +7,7 @@ import {
   decryptContent,
   type ProtectedContent,
 } from "@/lib/protected-content";
+import { adminUnlock } from "@/lib/admin.functions";
 
 const aquarell = aquarellAsset.url;
 const datum = datumAsset.url;
