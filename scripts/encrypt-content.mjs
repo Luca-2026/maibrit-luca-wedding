@@ -14,7 +14,7 @@ const content = {
     { time: "15.00", title: "ANKOMMEN IN DER LOCATION", where: "Hochzeitsfeier in der Caspar-David-Friedrich-Straße in Bonn Ückesdorf" },
     { time: "16:00", title: "KAFFEE & HOCHZEITSTORTE", where: "" },
     { time: "18:00", title: "ABENDESSEN", where: "" },
-    { time: "IM ANSCHLUSS", title: "PARTY", where: "" },
+    { time: "19:00", title: "PARTY", where: "" },
   ],
   locations: [
     {
