@@ -59,7 +59,7 @@ function AdminPage() {
       } else {
         setPw("");
         setUnlocked(true);
-        await refresh();
+        setRows(res.rows);
       }
     } catch (e) {
       setError((e as Error).message);
