@@ -198,18 +198,108 @@ function AdminPage() {
         {rows.length === 0 ? (
           <p className="text-olive/70">Noch keine Antworten eingegangen.</p>
         ) : (
-          <div className="overflow-x-auto border border-rose/30">
-            <table className="w-full text-sm">
-              <thead className="bg-cream border-b border-rose/30">
-                <tr className="text-left caps text-[10px] text-olive/70">
-                  <th className="px-4 py-3">Datum</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Antwort</th>
-                  <th className="px-4 py-3">Pers.</th>
-                  <th className="px-4 py-3">Begleitung</th>
-                  <th className="px-4 py-3">Nachricht</th>
-                </tr>
-              </thead>
+          <>
+            <section className="grid md:grid-cols-2 gap-6">
+              <div className="border border-olive/30 bg-olive/5">
+                <div className="px-5 py-3 border-b border-olive/20 flex items-baseline justify-between">
+                  <p className="caps text-xs text-olive">Zusagen</p>
+                  <p className="caps text-[10px] text-olive/70">
+                    {yesGuests} {yesGuests === 1 ? "Person" : "Personen"} · {yes.length} {yes.length === 1 ? "Antwort" : "Antworten"}
+                  </p>
+                </div>
+                {yes.length === 0 ? (
+                  <p className="px-5 py-4 text-olive/60 text-sm">Noch keine Zusagen.</p>
+                ) : (
+                  <ul className="divide-y divide-olive/15">
+                    {yes.map((r) => (
+                      <li key={r.id} className="px-5 py-4">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <p className="font-medium text-olive">{r.name}</p>
+                          <span className="caps text-[10px] text-olive/70">
+                            {r.party_size} {r.party_size === 1 ? "Person" : "Personen"}
+                          </span>
+                        </div>
+                        {r.companions && (
+                          <p className="text-sm text-olive/75 mt-1">
+                            mit: {r.companions}
+                          </p>
+                        )}
+                        {r.message && (
+                          <p className="text-sm text-olive/60 mt-1 italic">
+                            „{r.message}"
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="border border-bordeaux/30 bg-bordeaux/5">
+                <div className="px-5 py-3 border-b border-bordeaux/20 flex items-baseline justify-between">
+                  <p className="caps text-xs text-bordeaux">Absagen</p>
+                  <p className="caps text-[10px] text-olive/70">
+                    {no.length} {no.length === 1 ? "Antwort" : "Antworten"}
+                  </p>
+                </div>
+                {no.length === 0 ? (
+                  <p className="px-5 py-4 text-olive/60 text-sm">Keine Absagen.</p>
+                ) : (
+                  <ul className="divide-y divide-bordeaux/15">
+                    {no.map((r) => (
+                      <li key={r.id} className="px-5 py-4">
+                        <p className="font-medium text-olive">{r.name}</p>
+                        {r.message && (
+                          <p className="text-sm text-olive/60 mt-1 italic">
+                            „{r.message}"
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
+
+            <section className="border border-rose/30">
+              <div className="px-5 py-3 border-b border-rose/20 flex items-baseline justify-between">
+                <p className="caps text-xs text-olive">Gästeliste (alle zusagenden Personen)</p>
+                <p className="caps text-[10px] text-olive/70">
+                  {allYesGuests.length} {allYesGuests.length === 1 ? "Gast" : "Gäste"}
+                </p>
+              </div>
+              {allYesGuests.length === 0 ? (
+                <p className="px-5 py-4 text-olive/60 text-sm">Noch keine Gäste.</p>
+              ) : (
+                <ol className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 px-5 py-4 list-decimal list-inside">
+                  {allYesGuests.map((g, i) => (
+                    <li key={`${g.from}-${i}`} className="py-1 text-olive">
+                      {g.name}
+                      {g.from !== g.name && (
+                        <span className="text-olive/50 text-xs"> · via {g.from}</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </section>
+
+            <details className="border border-rose/20">
+              <summary className="cursor-pointer px-5 py-3 caps text-xs text-olive/70 hover:text-bordeaux">
+                Rohdaten anzeigen
+              </summary>
+              <div className="overflow-x-auto border-t border-rose/20">
+                <table className="w-full text-sm">
+                  <thead className="bg-cream border-b border-rose/30">
+                    <tr className="text-left caps text-[10px] text-olive/70">
+                      <th className="px-4 py-3">Datum</th>
+                      <th className="px-4 py-3">Name</th>
+                      <th className="px-4 py-3">Antwort</th>
+                      <th className="px-4 py-3">Pers.</th>
+                      <th className="px-4 py-3">Begleitung</th>
+                      <th className="px-4 py-3">Nachricht</th>
+                    </tr>
+                  </thead>
               <tbody>
                 {rows.map((r) => (
                   <tr
