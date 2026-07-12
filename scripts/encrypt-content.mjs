@@ -33,9 +33,9 @@ const content = {
     },
   ],
   hotels: [
-    { name: "Aparthotel Kottenforst", description: "Am nächsten zur Feier, ruhig am Kottenforst. Apartments mit eigener Küche.", distance: "ca. 2 km zur Location", url: "http://www.kottenforst.de/" },
-    { name: "V-Hotel", description: "Ausgefallenes Design-Hotel am Waldrand, u. a. mit Baumhaus-Zimmern.", distance: "ca. 4 km zur Location", url: "http://www.v-hotel.de/" },
-    { name: "Hotel Nettekoven", description: "Familiengeführt in Duisdorf, sehr sauber und persönlich.", distance: "ca. 4 km zur Location", url: "http://www.hotel-nettekoven.de/" },
+    { name: "Aparthotel Kottenforst", description: "Am nächsten zur Feier, ruhig am Kottenforst. Apartments mit eigener Küche.", distance: "ca. 2 km zur Location", url: "https://www.kottenforst.de/" },
+    { name: "V-Hotel", description: "Ausgefallenes Design-Hotel am Waldrand, u. a. mit Baumhaus-Zimmern.", distance: "ca. 4 km zur Location", url: "https://v-hotel.de/" },
+    { name: "Hotel Nettekoven", description: "Familiengeführt in Duisdorf, sehr sauber und persönlich.", distance: "ca. 4 km zur Location", url: "https://hotel-nettekoven.de/" },
     { name: "Platzhirsch Hotel", description: "Renoviert und zentral in Duisdorf, Restaurants direkt vor der Tür.", distance: "ca. 4 km zur Location", url: "https://www.platzhirschhotel.de/" },
     { name: "B&B Hotel Bonn-West", description: "Günstig und unkompliziert, verschiedene Zimmertypen inkl. Familienzimmer.", distance: "ca. 7 km zur Location", url: "https://www.hotel-bb.com/de/hotel/bonn-west" },
   ],
