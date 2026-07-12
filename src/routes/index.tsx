@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 // RSVP-Antworten werden in Lovable Cloud gespeichert und im Admin-Bereich angezeigt.
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
-const SESSION_KEY = "mul-unlocked-content-v10";
+const SESSION_KEY = "mul-unlocked-content-v11";
 
 function WeddingPage() {
   const [content, setContent] = useState<ProtectedContent | null>(null);
@@ -350,25 +350,61 @@ function Section({
 function Ablauf({ items }: { items: ProtectedContent["ablauf"] }) {
   return (
     <Section id="ablauf" eyebrow="Der Tag" title="Ablauf">
-      <ul className="space-y-8">
-        {items.map((it) => (
-          <li
-            key={it.time}
-            className="grid grid-cols-[auto_1fr] gap-6 md:gap-10 items-baseline border-t border-rose/25 pt-6"
-          >
-            <span className="display text-bordeaux text-5xl md:text-6xl">
-              {it.time}
-            </span>
-            <div>
-              <p className="caps text-sm text-olive mb-1">{it.title}</p>
-              <p className="text-lg">{it.where}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-10 text-olive/70 italic">
-        Den ausführlichen Ablauf findet ihr auf eurer Einladungskarte.
-      </p>
+      <ol className="relative mx-auto max-w-3xl">
+        {/* Vertikale Zierlinie */}
+        <span
+          aria-hidden="true"
+          className="absolute left-[68px] md:left-1/2 top-2 bottom-2 w-px bg-rose/30 md:-translate-x-1/2"
+        />
+
+        {items.map((it, i) => {
+          const alignRight = i % 2 === 1;
+          return (
+            <li
+              key={it.time + it.title}
+              className="relative grid grid-cols-[136px_1fr] md:grid-cols-2 md:gap-12 items-start py-6 md:py-8"
+            >
+              {/* Uhrzeit */}
+              <div
+                className={`pr-4 md:pr-0 ${
+                  alignRight ? "md:order-2 md:pl-12 md:text-left" : "md:pr-12 md:text-right"
+                }`}
+              >
+                <span className="display text-bordeaux text-4xl md:text-5xl leading-none">
+                  {it.time}
+                </span>
+                <span className="caps text-[10px] text-rose block mt-1 tracking-[0.2em]">
+                  Uhr
+                </span>
+              </div>
+
+              {/* Marker auf der Linie */}
+              <span
+                aria-hidden="true"
+                className="absolute left-[68px] md:left-1/2 top-8 -translate-x-1/2 flex items-center justify-center"
+              >
+                <span className="block h-3 w-3 rounded-full bg-cream border-2 border-rose" />
+              </span>
+
+              {/* Inhalt */}
+              <div
+                className={`pl-6 md:pl-0 ${
+                  alignRight ? "md:order-1 md:pr-12 md:text-right" : "md:pl-12 md:text-left"
+                }`}
+              >
+                <p className="caps text-sm text-olive tracking-[0.18em]">
+                  {it.title}
+                </p>
+                {it.where && (
+                  <p className="mt-2 text-olive/75 leading-relaxed italic">
+                    {it.where}
+                  </p>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </Section>
   );
 }
