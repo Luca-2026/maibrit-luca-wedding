@@ -276,6 +276,14 @@ function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
     try {
       const res = await unlockAdmin({ data: { password: pw } });
       if (res.ok) {
+        try {
+          window.sessionStorage.setItem(
+            "mul-admin-primed",
+            JSON.stringify({ rows: res.rows, t: Date.now() }),
+          );
+        } catch {
+          /* ignore */
+        }
         await navigate({ to: "/admin" });
         return;
       }
