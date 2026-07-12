@@ -521,7 +521,81 @@ function Dresscode() {
   );
 }
 
+/* ---------------- TRAUZEUGEN ---------------- */
+function Trauzeugen({ people }: { people: ProtectedContent["trauzeugen"] }) {
+  return (
+    <Section id="trauzeugen" eyebrow="An unserer Seite" title="Trauzeugen">
+      <p className="text-olive/80 mb-10 max-w-2xl">
+        Zwei besondere Menschen begleiten uns an diesem Tag ganz eng. Wenn ihr
+        Fragen habt, etwas nicht wisst oder einfach Hilfe braucht – sprecht sie
+        gern an.
+      </p>
+      <ul className="grid sm:grid-cols-2 gap-6 max-w-3xl">
+        {people.map((p) => (
+          <li
+            key={p.name}
+            className="border border-rose/30 p-8 bg-cream text-center"
+          >
+            <p className="caps text-[10px] text-rose tracking-[0.3em]">
+              {p.role}
+            </p>
+            <p className="display text-3xl text-bordeaux mt-3">{p.name}</p>
+            {p.note && (
+              <p className="mt-3 text-sm text-olive/70 italic">{p.note}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+/* ---------------- WÜNSCHE (keine Überraschungen) ---------------- */
+function Wuensche() {
+  return (
+    <Section eyebrow="Eine kleine Bitte" title="Ohne Überraschungen">
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          Wir möchten unseren Tag ganz bewusst so verbringen, wie wir ihn uns
+          vorstellen – <span className="text-rose">entspannt, nah und ohne
+          Programm</span>.
+        </p>
+        <p className="mt-4">
+          Darum unsere herzliche Bitte: <strong className="text-bordeaux">
+          bitte plant keine Spiele, Reden oder Überraschungen</strong>. Eure
+          Anwesenheit, ein gutes Gespräch und ein Tanz mit uns sind das
+          schönste Geschenk an diesem Abend.
+        </p>
+      </div>
+    </Section>
+  );
+}
+
+/* ---------------- GESCHENKE ---------------- */
+function Geschenke() {
+  return (
+    <Section id="geschenke" eyebrow="Falls ihr fragen mögt" title="Geschenke">
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          Das größte Geschenk ist, dass ihr diesen Tag mit uns feiert.
+        </p>
+        <p className="mt-4">
+          Wer uns darüber hinaus etwas mitgeben möchte: Wir sparen auf unsere{" "}
+          <span className="text-rose">Flitterwochen</span> und freuen uns über
+          einen kleinen Beitrag in unsere gemeinsame Reisekasse – gern in einem
+          schönen Umschlag am Hochzeitstag.
+        </p>
+        <p className="mt-4 italic text-olive/70">
+          Vielen lieben Dank – wir freuen uns riesig auf jede Erinnerung, die
+          wir mit euch mit nach Hause nehmen dürfen.
+        </p>
+      </div>
+    </Section>
+  );
+}
+
 /* ---------------- RSVP ---------------- */
+
 function Rsvp({ deadline, email }: { deadline: string; email: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
