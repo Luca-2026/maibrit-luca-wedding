@@ -838,14 +838,19 @@ function Footer({ email, phone }: { email: string; phone?: string }) {
             >
               {email}
             </a>
-            <br />
-            <a
-              href={telHref}
-              className="text-bordeaux underline underline-offset-4 decoration-rose/60"
-            >
-              {phone}
-            </a>
+            {phone && (
+              <>
+                <br />
+                <a
+                  href={telHref}
+                  className="text-bordeaux underline underline-offset-4 decoration-rose/60"
+                >
+                  {phone}
+                </a>
+              </>
+            )}
           </p>
+
 
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
             <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
