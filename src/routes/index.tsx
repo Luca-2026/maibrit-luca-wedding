@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 const RSVP_TO_EMAIL = "maibritbreuer@gmail.com";
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
-const SESSION_KEY = "mul-unlocked-content-v7";
+const SESSION_KEY = "mul-unlocked-content-v8";
 
 function WeddingPage() {
   const [content, setContent] = useState<ProtectedContent | null>(null);
