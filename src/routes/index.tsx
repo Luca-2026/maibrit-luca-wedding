@@ -819,8 +819,9 @@ function Field({
 }
 
 /* ---------------- FOOTER (unlocked) ---------------- */
-function Footer({ email, phone }: { email: string; phone: string }) {
-  const telHref = "tel:" + phone.replace(/[^+\d]/g, "");
+function Footer({ email, phone }: { email: string; phone?: string }) {
+  const telHref = phone ? "tel:" + phone.replace(/[^+\d]/g, "") : "";
+
   return (
     <footer className="relative mt-16 border-t border-rose/20 bg-cream">
       <div className="mx-auto max-w-6xl px-5 py-16 grid md:grid-cols-[1fr_auto] gap-10 items-end">
