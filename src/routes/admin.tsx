@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import {
   adminLock,
-  adminStatus,
   adminUnlock,
   listRsvps,
   type RsvpRow,
@@ -20,7 +19,6 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const status = useServerFn(adminStatus);
   const unlock = useServerFn(adminUnlock);
   const lock = useServerFn(adminLock);
   const list = useServerFn(listRsvps);
@@ -46,11 +44,7 @@ function AdminPage() {
   }
 
   useEffect(() => {
-    (async () => {
-      const s = await status();
-      setUnlocked(s.unlocked);
-      if (s.unlocked) await refresh();
-    })().catch((e) => setError((e as Error).message));
+    refresh().catch((e) => setError((e as Error).message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -64,6 +58,7 @@ function AdminPage() {
         setError("Passwort stimmt nicht.");
       } else {
         setPw("");
+        setUnlocked(true);
         await refresh();
       }
     } catch (e) {
