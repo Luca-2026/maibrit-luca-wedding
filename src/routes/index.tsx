@@ -559,9 +559,10 @@ function Wuensche() {
           vorstellen, entspannt und ohne Programm.
         </p>
         <p className="mt-4 whitespace-pre-wrap">
-          Darum unsere herzliche Bitte: <strong className="text-bordeaux">bitte plant keine Spiele oder Brautentführungen</strong>. Wir freuen uns wenn ihr dabei seid.&nbsp;
-
-Für Überraschungen sind unsere Familien und Trauzeugen für euch erreichbar.&nbsp;
+          Darum unsere herzliche Bitte: <strong className="text-bordeaux">bitte plant keine Spiele oder Brautentführungen</strong>. Wir freuen uns, wenn ihr einfach mit uns feiert.
+        </p>
+        <p className="mt-4">
+          Für Überraschungen sind unsere Familien und Trauzeugen für euch erreichbar.&nbsp;
         </p>
       </div>
     </Section>
