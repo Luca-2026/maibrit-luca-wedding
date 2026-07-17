@@ -571,20 +571,16 @@ Für Überraschungen sind unsere Familien und Trauzeugen für euch erreichbar.&n
 /* ---------------- GESCHENKE ---------------- */
 function Geschenke() {
   return (
-    <Section id="geschenke" eyebrow="Falls ihr fragen mögt" title="Geschenke">
+    <Section id="geschenke" eyebrow="FALLS IHR UNS WAS SCHENKEN MÖCHTET" title="Geschenke">
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
-          Das größte Geschenk ist, dass ihr diesen Tag mit uns feiert.
+          Dass ihr an dem Tag mit uns feiert, ist Geschenk genug.&nbsp;
         </p>
         <p className="mt-4">
-          Wer uns darüber hinaus etwas mitgeben möchte: Wir sparen auf unsere{" "}
-          <span className="text-rose">Flitterwochen</span> und freuen uns über
-          einen kleinen Beitrag in unsere gemeinsame Reisekasse – gern in einem
-          schönen Umschlag am Hochzeitstag.
+          Solltet ihr uns dennoch etwas schenken wollen, freuen wir uns über einen Beitrag zu unseren Flitterwochen.
         </p>
         <p className="mt-4 italic text-olive/70">
-          Vielen lieben Dank – wir freuen uns riesig auf jede Erinnerung, die
-          wir mit euch mit nach Hause nehmen dürfen.
+          &nbsp;
         </p>
       </div>
     </Section>
