@@ -499,22 +499,26 @@ function Dresscode() {
         </p>
       </div>
 
-      <div className="mt-10 flex flex-wrap items-start gap-8">
-        <div className="flex flex-col items-center gap-2">
-          <div
-            className="h-11 w-11 rounded-full shadow-sm"
-            style={{ backgroundColor: "#97637A" }}
-            aria-hidden="true"
-          />
-          <span className="caps text-[10px] text-olive/80">Altrosa</span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <div
-            className="h-11 w-11 rounded-full bg-olive shadow-sm"
-            aria-hidden="true"
-          />
-          <span className="caps text-[10px] text-olive/80">Olivgrün</span>
-        </div>
+      <div className="mt-10 flex flex-wrap justify-start gap-8 md:gap-10">
+        {[
+          { name: "Zartrosa", hex: "#E1C7D0" },
+          { name: "Altrosa", hex: "#97637A" },
+          { name: "Beere", hex: "#6B4257" },
+          { name: "Eukalyptus", hex: "#AEBDA6" },
+          { name: "Salbei", hex: "#7E8C6C" },
+          { name: "Olivgrün", hex: "#46531F" },
+        ].map((color) => (
+          <div key={color.name} className="flex flex-col items-center gap-3">
+            <div
+              className="h-14 w-14 rounded-full border-[0.5px] border-black/12 shadow-sm"
+              style={{ backgroundColor: color.hex }}
+              aria-hidden="true"
+            />
+            <span className="caps text-[11px] text-olive/80 tracking-[0.18em]">
+              {color.name}
+            </span>
+          </div>
+        ))}
       </div>
     </Section>
   );
