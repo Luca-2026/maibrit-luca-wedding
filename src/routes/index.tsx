@@ -250,8 +250,7 @@ function Hero() {
           Maibrit &amp; Luca
         </h2>
         <p className="mt-8 max-w-md mx-auto text-lg leading-relaxed text-olive/85">
-          Wir heiraten und wir wünschen uns, dass ihr an unserer Seite seid,
-          wenn wir am 24. Oktober 2026 ja sagen.
+          Wir heiraten und wünschen uns, dass ihr an unserer Seite seid, wenn wir am 24. Oktober 2026 Ja sagen.
         </p>
       </div>
     </header>
@@ -490,9 +489,7 @@ function Dresscode() {
           <span className="text-rose">Leger, aber schick.</span>&nbsp;
           Zieht an, worin ihr euch wohlfühlt und den Tag genießen könnt.
         </p>
-        <p className="mt-4">
-          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß.</strong>
-        </p>
+        <p className="mt-4" />
         <p className="mt-4">
           Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren,
           ein schönes Extra, aber definitiv kein Muss.
@@ -563,7 +560,7 @@ function Wuensche() {
           vorstellen, entspannt und ohne Programm.
         </p>
         <p className="mt-4 whitespace-pre-wrap">
-          Darum unsere herzliche Bitte: <strong className="text-bordeaux">bitte plant keine Spiele oder Brautentführungen</strong>. Wir freuen uns, wenn ihr einfach mit uns feiert.
+          Bitte plant keine Spiele oder Brautentführungen. Wir freuen uns, wenn ihr einfach mit uns feiert.
         </p>
         <p className="mt-4">
           Für Überraschungen sind unsere Familien und Trauzeugen für euch erreichbar.&nbsp;
@@ -656,7 +653,8 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
         Bei Rückfragen erreicht ihr uns unter{" "}
         <a href={`mailto:${email}`} className="text-bordeaux underline">
           {email}
-        </a>. oder +49 151 42360784
+        </a>{" "}
+        oder +49 151 42360784
       </p>
 
       {status === "ok" ? (
