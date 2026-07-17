@@ -898,7 +898,6 @@ function LegalSections({ email }: { email: string }) {
           <p>
             Maibrit Breuer &amp; Luca Sandhoff
             <br />
-            Kontakt: {email}
           </p>
         </section>
         <section id="datenschutz">
