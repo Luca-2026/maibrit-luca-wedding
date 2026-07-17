@@ -538,7 +538,7 @@ function Trauzeugen({ people }: { people: ProtectedContent["trauzeugen"] }) {
             <p className="caps text-[10px] text-rose tracking-[0.3em]">
               {p.role}
             </p>
-            <p className="display text-3xl text-bordeaux mt-3">{p.name}</p>
+            <p className="display text-3xl text-bordeaux mt-3 whitespace-pre-wrap">{p.name}</p>
             {p.note && (
               <p className="mt-3 text-sm text-olive/70 italic">{p.note}</p>
             )}
