@@ -489,7 +489,7 @@ function Dresscode() {
           <span className="text-rose">Leger, aber schick.</span>&nbsp;
           Zieht an, worin ihr euch wohlfühlt und den Tag genießen könnt.
         </p>
-        <p className="mt-4" />
+        
         <p className="mt-4">
           Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren,
           ein schönes Extra, aber definitiv kein Muss.
