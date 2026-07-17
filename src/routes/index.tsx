@@ -403,7 +403,7 @@ function Ablauf({ items }: { items: ProtectedContent["ablauf"] }) {
                 {it.title}
               </p>
               {it.where && (
-                <p className="mt-2 text-olive/70 italic text-sm">
+                <p className="mt-2 text-olive/70 italic text-sm whitespace-pre-wrap">
                   {it.where}
                 </p>
               )}
@@ -433,7 +433,7 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
                 </span>
               ))}
             </address>
-            <p className="text-sm text-olive/70 mb-4">{loc.note}</p>
+            <p className="text-sm text-olive/70 mb-4 whitespace-pre-wrap">{loc.note}</p>
             <a
               href={loc.maps}
               target="_blank"
