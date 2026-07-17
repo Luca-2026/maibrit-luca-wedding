@@ -484,14 +484,14 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
 /* ---------------- DRESSCODE ---------------- */
 function Dresscode() {
   return (
-    <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Kleidung">
+    <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Dresscode">
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
-          <span className="text-rose">Leger, aber schick.</span><br />
+          <span className="text-rose">Leger, aber schick.</span>&nbsp;
           Zieht an, worin ihr euch wohlfühlt und den Tag genießen könnt.
         </p>
         <p className="mt-4">
-          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
+          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß.</strong>
         </p>
         <p className="mt-4">
           Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren,
