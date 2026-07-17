@@ -403,7 +403,7 @@ function Ablauf({ items }: { items: ProtectedContent["ablauf"] }) {
                 {it.title}
               </p>
               {it.where && (
-                <p className="mt-2 text-olive/70 italic text-sm">
+                <p className="mt-2 text-olive/70 italic text-sm whitespace-pre-wrap">
                   {it.where}
                 </p>
               )}
@@ -433,7 +433,7 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
                 </span>
               ))}
             </address>
-            <p className="text-sm text-olive/70 mb-4">{loc.note}</p>
+            <p className="text-sm text-olive/70 mb-4 whitespace-pre-wrap">{loc.note}</p>
             <a
               href={loc.maps}
               target="_blank"
@@ -452,11 +452,10 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
 /* ---------------- ÜBERNACHTUNG ---------------- */
 function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
   return (
-    <Section id="uebernachtung" eyebrow="Wer möchte, kann bleiben" title="Übernachtung">
+    <Section id="uebernachtung" eyebrow="IHR BRAUCHT EIN HOTEL?" title="Übernachtung">
       <p className="text-olive/80 mb-10 max-w-2xl">
         Falls ihr den Abend entspannt ausklingen lassen und nicht mehr fahren
-        möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht – ganz
-        als Anregung. Bucht einfach direkt, was euch am besten gefällt.
+        möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht.
       </p>
       <ul className="grid md:grid-cols-3 gap-6">
         {hotels.map((h) => (
@@ -465,7 +464,7 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
             className="border border-rose/30 p-6 bg-cream flex flex-col"
           >
             <h3 className="display text-2xl text-bordeaux mb-2">{h.name}</h3>
-            <p className="text-sm text-olive/70 mb-4">{h.description}</p>
+            <p className="text-sm text-olive/70 mb-4 whitespace-pre-wrap">{h.description}</p>
             <p className="text-sm text-olive/60 mb-6">{h.distance}</p>
             <a
               href={h.url}
