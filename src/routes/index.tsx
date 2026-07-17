@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 // RSVP-Antworten werden in Lovable Cloud gespeichert und im Admin-Bereich angezeigt.
 
 // Session-only key — Passwort selbst wird nie gespeichert, nur der entschlüsselte Inhalt für die aktuelle Session.
-const SESSION_KEY = "mul-unlocked-content-v12";
+const SESSION_KEY = "mul-unlocked-content-v13";
 
 function WeddingPage() {
   const [content, setContent] = useState<ProtectedContent | null>(null);
