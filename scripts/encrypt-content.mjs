@@ -61,7 +61,7 @@ const content = {
   ],
   rsvpDeadline: "15. September 2026",
   contactEmail: "maibritbreuer@gmail.com",
-  contactPhone: "+49 000 0000000",
+  contactPhone: "+49 151 42360784",
 };
 
 

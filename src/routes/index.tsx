@@ -524,14 +524,11 @@ function Dresscode() {
 function Trauzeugen({ people }: { people: ProtectedContent["trauzeugen"] }) {
   return (
     <Section id="trauzeugen" eyebrow="An unserer Seite" title="Trauzeugen">
-      <p className="text-olive/80 mb-10 max-w-2xl">
-        &nbsp;
-      </p>
-      <p className="text-olive/80 mb-10 max-w-2xl">
-        Zwei besondere Menschen begleiten uns an diesem Tag ganz eng. Wenn ihr
-        Fragen habt, etwas nicht wisst oder einfach Hilfe braucht sprecht sie
-        gern an.
-      </p>
+      <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
+        <p>
+          &nbsp;
+        </p>
+      </div>
       <ul className="grid sm:grid-cols-2 gap-6 max-w-3xl">
         {people.map((p) => (
           <li
@@ -559,12 +556,12 @@ function Wuensche() {
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
           Wir möchten unseren Tag ganz bewusst so verbringen, wie wir ihn uns
-          vorstellen,&nbsp;
-          entspannt und ohne Programm.
+          vorstellen, entspannt und ohne Programm.
         </p>
-        <p className="mt-4">
-          Darum unsere herzliche Bitte: <strong className="text-bordeaux">
-          bitte plant keine Spiele oder Überraschungen</strong>. Wir freuen uns wenn ihr dabei seid.&nbsp;
+        <p className="mt-4 whitespace-pre-wrap">
+          Darum unsere herzliche Bitte: <strong className="text-bordeaux">bitte plant keine Spiele oder Brautentführungen</strong>. Wir freuen uns wenn ihr dabei seid.&nbsp;
+
+Für Überraschungen sind unsere Familien und Trauzeugen für euch erreichbar.&nbsp;
         </p>
       </div>
     </Section>
@@ -648,18 +645,17 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
 
 
   return (
-    <Section id="rsvp" eyebrow="Antwort erbeten" title="RSVP">
+    <Section id="rsvp" eyebrow="SEID IHR DABEI?&nbsp;" title="RSVP">
       <p className="text-olive/85 mb-2 max-w-2xl">
         Bitte gebt uns bis zum{" "}
         <strong className="text-bordeaux">{deadline}</strong> Bescheid, ob ihr
         dabei sein könnt.
       </p>
-      <p className="text-olive/70 mb-2 max-w-2xl text-sm">
+      <p className="text-olive/70 mb-2 max-w-2xl text-sm whitespace-pre-wrap">
         Bei Rückfragen erreicht ihr uns unter{" "}
         <a href={`mailto:${email}`} className="text-bordeaux underline">
           {email}
-        </a>
-        .
+        </a>. oder +49 151 42360784
       </p>
 
       {status === "ok" ? (
