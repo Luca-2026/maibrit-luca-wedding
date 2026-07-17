@@ -484,14 +484,14 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
 /* ---------------- DRESSCODE ---------------- */
 function Dresscode() {
   return (
-    <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Kleidung">
+    <Section id="dresscode" eyebrow="WAS IHR TRAGT" title="Dresscode">
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
-          <span className="text-rose">Leger, aber schick.</span><br />
+          <span className="text-rose">Leger, aber schick.</span>&nbsp;
           Zieht an, worin ihr euch wohlfühlt und den Tag genießen könnt.
         </p>
         <p className="mt-4">
-          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß</strong>
+          Eine kleine Bitte: <strong className="text-bordeaux">kein Weiß.</strong>
         </p>
         <p className="mt-4">
           Wer Lust hat, darf sich gern farblich an unseren Tönen orientieren,
@@ -525,8 +525,11 @@ function Trauzeugen({ people }: { people: ProtectedContent["trauzeugen"] }) {
   return (
     <Section id="trauzeugen" eyebrow="An unserer Seite" title="Trauzeugen">
       <p className="text-olive/80 mb-10 max-w-2xl">
+        &nbsp;
+      </p>
+      <p className="text-olive/80 mb-10 max-w-2xl">
         Zwei besondere Menschen begleiten uns an diesem Tag ganz eng. Wenn ihr
-        Fragen habt, etwas nicht wisst oder einfach Hilfe braucht – sprecht sie
+        Fragen habt, etwas nicht wisst oder einfach Hilfe braucht sprecht sie
         gern an.
       </p>
       <ul className="grid sm:grid-cols-2 gap-6 max-w-3xl">
@@ -556,14 +559,12 @@ function Wuensche() {
       <div className="max-w-2xl text-lg leading-relaxed text-olive/85">
         <p>
           Wir möchten unseren Tag ganz bewusst so verbringen, wie wir ihn uns
-          vorstellen – <span className="text-rose">entspannt, nah und ohne
-          Programm</span>.
+          vorstellen,&nbsp;
+          entspannt und ohne Programm.
         </p>
         <p className="mt-4">
           Darum unsere herzliche Bitte: <strong className="text-bordeaux">
-          bitte plant keine Spiele, Reden oder Überraschungen</strong>. Eure
-          Anwesenheit, ein gutes Gespräch und ein Tanz mit uns sind das
-          schönste Geschenk an diesem Abend.
+          bitte plant keine Spiele oder Überraschungen</strong>. Wir freuen uns wenn ihr dabei seid.&nbsp;
         </p>
       </div>
     </Section>
