@@ -452,11 +452,10 @@ function Anfahrt({ locations }: { locations: ProtectedContent["locations"] }) {
 /* ---------------- ÜBERNACHTUNG ---------------- */
 function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
   return (
-    <Section id="uebernachtung" eyebrow="Wer möchte, kann bleiben" title="Übernachtung">
+    <Section id="uebernachtung" eyebrow="IHR BRAUCHT EIN HOTEL?" title="Übernachtung">
       <p className="text-olive/80 mb-10 max-w-2xl">
         Falls ihr den Abend entspannt ausklingen lassen und nicht mehr fahren
-        möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht – ganz
-        als Anregung. Bucht einfach direkt, was euch am besten gefällt.
+        möchtet, haben wir euch ein paar Hotels in der Nähe herausgesucht.
       </p>
       <ul className="grid md:grid-cols-3 gap-6">
         {hotels.map((h) => (
