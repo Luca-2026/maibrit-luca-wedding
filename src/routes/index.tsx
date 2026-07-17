@@ -250,9 +250,8 @@ function Hero() {
           Maibrit &amp; Luca
         </h2>
         <p className="mt-8 max-w-md mx-auto text-lg leading-relaxed text-olive/85">
-          Nach vielen gemeinsamen Jahren wird es Zeit — wir heiraten. Und wir
-          wünschen uns, dass ihr an unserer Seite seid, wenn wir am
-          24. Oktober 2026 ja sagen.
+          Wir heiraten und wir wünschen uns, dass ihr an unserer Seite seid,
+          wenn wir am 24. Oktober 2026 ja sagen.
         </p>
       </div>
     </header>
