@@ -464,7 +464,7 @@ function Uebernachtung({ hotels }: { hotels: ProtectedContent["hotels"] }) {
             className="border border-rose/30 p-6 bg-cream flex flex-col"
           >
             <h3 className="display text-2xl text-bordeaux mb-2">{h.name}</h3>
-            <p className="text-sm text-olive/70 mb-4">{h.description}</p>
+            <p className="text-sm text-olive/70 mb-4 whitespace-pre-wrap">{h.description}</p>
             <p className="text-sm text-olive/60 mb-6">{h.distance}</p>
             <a
               href={h.url}
