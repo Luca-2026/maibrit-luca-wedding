@@ -501,16 +501,16 @@ function Dresscode() {
 
       <div className="mt-10 flex flex-wrap justify-start gap-8 md:gap-10">
         {[
-          { name: "Zartrosa", hex: "#E1C7D0" },
+          { name: "Zartrosa", hex: "#C6A9B6", border: "border-black/16" },
           { name: "Altrosa", hex: "#97637A" },
-          { name: "Beere", hex: "#6B4257" },
+          { name: "Bordeaux", hex: "#4F132E" },
           { name: "Eukalyptus", hex: "#AEBDA6" },
           { name: "Salbei", hex: "#7E8C6C" },
           { name: "Olivgrün", hex: "#46531F" },
         ].map((color) => (
           <div key={color.name} className="flex flex-col items-center gap-3">
             <div
-              className="h-14 w-14 rounded-full border-[0.5px] border-black/12 shadow-sm"
+              className={`h-14 w-14 rounded-full border-[0.5px] shadow-sm ${color.border ?? "border-black/12"}`}
               style={{ backgroundColor: color.hex }}
               aria-hidden="true"
             />
