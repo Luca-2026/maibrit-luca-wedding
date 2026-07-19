@@ -63,55 +63,40 @@ async function main() {
     const localAssetsDir = path.join(outDir, LOCAL_ASSET_DIR);
     fs.mkdirSync(localAssetsDir, { recursive: true });
 
-    const assetPathRe = /\/__l5e\/assets-v1\/([A-Za-z0-9._\-\/]+)/g;
+    const walkExt = new Set([".js", ".mjs", ".css", ".html"]);
     const seen = new Set();
 
-    async function collect(text) {
-      let m;
-      while ((m = assetPathRe.exec(text))) {
-        const key = m[1];
-        if (seen.has(key)) continue;
-        seen.add(key);
-        const url = `${CDN_HOST}/__l5e/assets-v1/${key}`;
-        const dest = path.join(localAssetsDir, key);
-        fs.mkdirSync(path.dirname(dest), { recursive: true });
-        console.log("   ↓", key);
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`CDN fetch fehlgeschlagen (${res.status}): ${url}`);
-        const buf = Buffer.from(await res.arrayBuffer());
-        fs.writeFileSync(dest, buf);
-      }
+    function scan(text) {
+      const re = /\/__l5e\/assets-v1\/([A-Za-z0-9._\-\/]+)/g;
+      for (const m of text.matchAll(re)) seen.add(m[1]);
     }
 
-    // Alle relevanten Text-Dateien scannen (HTML + JS-Chunks)
-    const walkExt = new Set([".js", ".mjs", ".css", ".html"]);
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const p = path.join(dir, entry.name);
         if (entry.isDirectory()) walk(p);
         else if (walkExt.has(path.extname(entry.name))) {
           const t = fs.readFileSync(p, "utf8");
-          if (t.includes("/__l5e/assets-v1/")) {
-            // sync collect via marker; wir sammeln alle Pfade in einem Set und laden dann
-            let m;
-            while ((m = assetPathRe.exec(t))) seen.add(m[1]);
-          }
+          if (t.includes("/__l5e/assets-v1/")) scan(t);
         }
       }
     }
+
     walk(outDir);
-    await collect(homeHtml);
-    await collect(adminHtml);
-    // Assets, die wir per walk gesammelt haben, aber noch nicht geladen:
+    scan(homeHtml);
+    scan(adminHtml);
+
     for (const key of seen) {
       const dest = path.join(localAssetsDir, key);
       if (fs.existsSync(dest)) continue;
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
       const url = `${CDN_HOST}/__l5e/assets-v1/${key}`;
       console.log("   ↓", key);
       const res = await fetch(url);
       if (!res.ok) throw new Error(`CDN fetch fehlgeschlagen (${res.status}): ${url}`);
       fs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
     }
+
 
     // Rewrite in allen relevanten Dateien: /__l5e/assets-v1/ → /assets-cdn/
     function rewriteAll(dir) {
