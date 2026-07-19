@@ -63,7 +63,7 @@ async function main() {
     const localAssetsDir = path.join(outDir, LOCAL_ASSET_DIR);
     fs.mkdirSync(localAssetsDir, { recursive: true });
 
-    const assetPathRe = /\/__l5e\/assets-v1\/([^"'\s)]+)/g;
+    const assetPathRe = /\/__l5e\/assets-v1\/([A-Za-z0-9._\-\/]+)/g;
     const seen = new Set();
 
     async function collect(text) {
