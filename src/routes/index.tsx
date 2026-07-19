@@ -890,8 +890,9 @@ function LegalSections({ email }: { email: string }) {
         <section id="impressum">
           <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
           <p>
-            Maibrit Breuer &amp; Luca Sandhoff
+            Maibrit &amp; Luca
             <br />
+            Kontakt: <a href={`mailto:${email}`} className="text-bordeaux underline">{email}</a>
           </p>
         </section>
         <section id="datenschutz">
