@@ -90,6 +90,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Wir sagen ja! 24. Oktober 2026.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
