@@ -5,15 +5,4 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig({
-  tanstackStart: {
-    // SPA-Modus: erzeugt eine statische index.html in dist/client/, damit die
-    // Seite auf jedem statischen Hoster (Apache/Nginx bei serverprofis) läuft.
-    spa: {
-      enabled: true,
-      prerender: {
-        outputPath: "/index.html",
-      },
-    },
-  },
-});
+export default defineConfig({});
