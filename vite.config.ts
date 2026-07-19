@@ -10,16 +10,14 @@ export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     server: { entry: "server" },
-    // Prerender routes as static HTML so the site can be self-hosted on any
-    // static host (Apache/Nginx) — dist/client/ contains everything needed.
-    prerender: {
+    // SPA-Modus: erzeugt eine statische index.html in dist/client/, damit die
+    // Seite auf jedem statischen Hoster (z. B. Apache/Nginx bei serverprofis)
+    // laufen kann. Alle Routen (/, /admin) werden clientseitig gerendert.
+    spa: {
       enabled: true,
-      crawlLinks: false,
-      routes: ["/", "/admin"],
+      prerender: {
+        outputPath: "/index.html",
+      },
     },
-    pages: [
-      { path: "/", prerender: { enabled: true } },
-      { path: "/admin", prerender: { enabled: true } },
-    ],
   },
 });
