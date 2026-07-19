@@ -5,8 +5,8 @@
  *
  * Ablauf:
  *   1. `bun run build:app` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
- *   2. Lädt den gebauten Server-Handler direkt über Node.
- *   3. Ruft `/` und `/admin` ab → speichert als statische index.html.
+ *   2. Lädt – falls vorhanden – den gebauten Server-Handler direkt über Node.
+ *   3. Ruft `/` und `/admin` ab; ohne Server-Entry nutzt es den SPA-Fallback.
  *   4. Rewrite: alle `/__l5e/assets-v1/...`-Pfade werden zu lokalen
  *      `/assets-cdn/...`-Dateien, die Bilder werden von Lovable-CDN
  *      heruntergeladen und in `dist/assets-cdn/` abgelegt.
@@ -96,6 +96,42 @@ function createAssetBinding(rootDir) {
   };
 }
 
+function findServerEntry() {
+  const serverDir = path.join("dist", "server");
+  if (!fs.existsSync(serverDir)) return null;
+
+  const files = [];
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(p);
+      else if (entry.name.endsWith(".mjs") || entry.name.endsWith(".js")) files.push(p);
+    }
+  }
+  walk(serverDir);
+
+  const preferredNames = ["index.mjs", "index.js", "server.mjs", "server.js"];
+  for (const name of preferredNames) {
+    const match = files.find((file) => path.basename(file) === name);
+    if (match) return match;
+  }
+
+  for (const file of files) {
+    const text = fs.readFileSync(file, "utf8");
+    if (text.includes("fetch(") && text.includes("export")) return file;
+  }
+
+  return null;
+}
+
+function readClientIndexHtml() {
+  const clientIndex = path.join("dist", "client", "index.html");
+  if (!fs.existsSync(clientIndex)) {
+    throw new Error("Client index.html wurde nicht gefunden. Der App-Build hat keinen statischen Client erzeugt.");
+  }
+  return fs.readFileSync(clientIndex, "utf8");
+}
+
 async function renderStaticRoute(worker, routePath) {
   const response = await worker.fetch(
     new Request(`http://127.0.0.1${routePath}`),
@@ -112,13 +148,25 @@ async function main() {
   console.log("→ 1/6  App-Build");
   runViteBuild();
 
-  console.log("→ 2/6  Lade Server-Handler");
-  const serverEntry = `${pathToFileURL(path.resolve("dist", "server", "index.mjs")).href}?t=${Date.now()}`;
-  const { default: worker } = await import(serverEntry);
+  console.log("→ 2/6  Lade Server-Handler / SPA-Fallback");
+  const serverEntryPath = findServerEntry();
+  let homeHtml;
+  let adminHtml;
 
-  console.log("→ 3/6  Prerender / + /admin");
-  const homeHtml = await renderStaticRoute(worker, "/");
-  const adminHtml = await renderStaticRoute(worker, "/admin");
+  if (serverEntryPath) {
+    const serverEntry = `${pathToFileURL(path.resolve(serverEntryPath)).href}?t=${Date.now()}`;
+    const { default: worker } = await import(serverEntry);
+    console.log(`   Server-Entry: ${serverEntryPath}`);
+    console.log("→ 3/6  Prerender / + /admin");
+    homeHtml = await renderStaticRoute(worker, "/");
+    adminHtml = await renderStaticRoute(worker, "/admin");
+  } else {
+    console.log("   Kein dist/server-Entry gefunden – nutze statischen SPA-Fallback.");
+    console.log("→ 3/6  Erzeuge / + /admin aus client/index.html");
+    const spaHtml = readClientIndexHtml();
+    homeHtml = spaHtml;
+    adminHtml = spaHtml;
+  }
 
 
     console.log("→ 4/6  Lovable-CDN-Assets einbetten");
