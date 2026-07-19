@@ -1,26 +1,68 @@
 #!/usr/bin/env node
 /**
- * Erzeugt einen komplett statisch hostbaren Build in `dist/client/` für
+ * Erzeugt einen komplett statisch hostbaren Build in `dist/` für
  * Standard-Webhoster (z. B. serverprofis, Apache/Nginx).
  *
  * Ablauf:
- *   1. `bun run build` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
+ *   1. `bun run build:app` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
  *   2. Startet den gebauten Worker lokal via `wrangler dev`.
  *   3. Ruft `/` und `/admin` ab → speichert als statische index.html.
  *   4. Rewrite: alle `/__l5e/assets-v1/...`-Pfade werden zu lokalen
  *      `/assets-cdn/...`-Dateien, die Bilder werden von Lovable-CDN
- *      heruntergeladen und in `dist/client/assets-cdn/` abgelegt.
+ *      heruntergeladen und in `dist/assets-cdn/` abgelegt.
  *   5. Legt `.htaccess` für SPA-Fallback + Client-Routing an.
- *   6. Räumt `dist/server/`, `dist/nitro.json`, `dist/package*.json` weg
- *      → nur noch `dist/client/` wird deployed.
+ *   6. Kopiert den fertigen Client-Build nach `dist/`, damit GitHub-/Static-
+ *      Hoster direkt den erwarteten `dist/index.html`-Ordner finden.
  */
 import { spawn, spawnSync } from "node:child_process";
 import { setTimeout as sleep } from "node:timers/promises";
 import fs from "node:fs";
 import path from "node:path";
 
-const CDN_HOST = process.env.LOVABLE_ASSET_HOST ?? "http://127.0.0.1:8080";
+const LOVABLE_PROJECT_ID = "7691af02-23f9-4aeb-9e86-37387a472ecd";
 const LOCAL_ASSET_DIR = "assets-cdn";
+const ASSET_HOSTS = [
+  process.env.LOVABLE_ASSET_HOST,
+  "http://127.0.0.1:8080",
+  `https://id-preview--${LOVABLE_PROJECT_ID}.lovable.app`,
+  `https://${LOVABLE_PROJECT_ID}.lovableproject.com`,
+].filter((host, index, all) => Boolean(host) && all.indexOf(host) === index);
+
+function commandExists(cmd) {
+  return spawnSync(cmd, ["--version"], { stdio: "ignore" }).status === 0;
+}
+
+function runScript(scriptName) {
+  const userAgent = process.env.npm_config_user_agent ?? "";
+  if (userAgent.startsWith("bun") || (!userAgent && commandExists("bun"))) {
+    run("bun", ["run", scriptName]);
+    return;
+  }
+  if (userAgent.startsWith("pnpm")) {
+    run("pnpm", ["run", scriptName]);
+    return;
+  }
+  if (userAgent.startsWith("yarn")) {
+    run("yarn", [scriptName]);
+    return;
+  }
+  run("npm", ["run", scriptName]);
+}
+
+async function fetchAsset(key) {
+  const errors = [];
+  for (const host of ASSET_HOSTS) {
+    const url = `${host}/__l5e/assets-v1/${key}`;
+    try {
+      const res = await fetch(url);
+      if (res.ok) return Buffer.from(await res.arrayBuffer());
+      errors.push(`${url} → ${res.status}`);
+    } catch (error) {
+      errors.push(`${url} → ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  throw new Error(`Asset-Download fehlgeschlagen: ${key}\n${errors.join("\n")}`);
+}
 
 function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, { stdio: "inherit", ...opts });
@@ -40,11 +82,14 @@ async function waitForServer(url, timeoutMs = 30000) {
 }
 
 async function main() {
-  console.log("→ 1/6  Build");
-  run("bun", ["run", "build"]);
+  console.log("→ 1/6  App-Build");
+  runScript("build:app");
 
   console.log("→ 2/6  Starte Wrangler");
-  const wr = spawn("bunx", ["wrangler", "dev", "--local", "--port", "8799", "--ip", "127.0.0.1"], {
+  const wrangler = commandExists("bunx")
+    ? { cmd: "bunx", args: ["wrangler"] }
+    : { cmd: "npx", args: ["--yes", "wrangler"] };
+  const wr = spawn(wrangler.cmd, [...wrangler.args, "dev", "--local", "--port", "8799", "--ip", "127.0.0.1"], {
     cwd: "dist",
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -96,11 +141,8 @@ async function main() {
       const dest = path.join(localAssetsDir, key);
       if (fs.existsSync(dest)) continue;
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      const url = `${CDN_HOST}/__l5e/assets-v1/${key}`;
       console.log("   ↓", key);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`CDN fetch fehlgeschlagen (${res.status}): ${url}`);
-      fs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+      fs.writeFileSync(dest, await fetchAsset(key));
     }
 
 
@@ -161,12 +203,20 @@ async function main() {
 `;
     fs.writeFileSync(path.join(outDir, ".htaccess"), htaccess);
 
-    console.log("→ 6/6  Aufräumen (Server-/Nitro-Artefakte)");
+    console.log("→ 6/6  Aufräumen + dist/ für GitHub vorbereiten");
     for (const rel of ["server", "nitro.json", "package.json", "package-lock.json"]) {
       fs.rmSync(path.join("dist", rel), { recursive: true, force: true });
     }
 
-    console.log("\n✅  Statischer Build fertig: dist/client/ komplett hochladen.");
+    for (const entry of fs.readdirSync(outDir, { withFileTypes: true })) {
+      const src = path.join(outDir, entry.name);
+      const dest = path.join("dist", entry.name);
+      fs.rmSync(dest, { recursive: true, force: true });
+      fs.cpSync(src, dest, { recursive: true });
+    }
+    fs.rmSync(outDir, { recursive: true, force: true });
+
+    console.log("\n✅  Statischer Build fertig: dist/ komplett hochladen.");
   } finally {
     wr.kill("SIGTERM");
     // Notfalls Restprozess killen
