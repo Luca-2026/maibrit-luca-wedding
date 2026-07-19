@@ -1,5 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import aquarellAsset from "@/assets/aquarell.png.asset.json";
 import datumAsset from "@/assets/datum.png.asset.json";
@@ -7,7 +6,6 @@ import {
   decryptContent,
   type ProtectedContent,
 } from "@/lib/protected-content";
-import { adminUnlock } from "@/lib/admin.functions";
 
 const aquarell = aquarellAsset.url;
 const datum = datumAsset.url;
@@ -261,39 +259,18 @@ function Hero() {
 function Gate({ onUnlock }: { onUnlock: (c: ProtectedContent) => void }) {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
-  const navigate = useNavigate();
-  const unlockAdmin = useServerFn(adminUnlock);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const pw = password.trim();
     if (!pw) return;
     setStatus("checking");
-    // 1) Gäste-Code: versuch, den geschützten Inhalt zu entschlüsseln.
     try {
       const content = await decryptContent(pw);
       onUnlock(content);
       return;
     } catch {
-      /* kein Gäste-Code — evtl. Admin */
-    }
-    // 2) Admin-Passwort: Server-Fn prüft und setzt Session-Cookie.
-    try {
-      const res = await unlockAdmin({ data: { password: pw } });
-      if (res.ok) {
-        try {
-          window.sessionStorage.setItem(
-            "mul-admin-primed",
-            JSON.stringify({ rows: res.rows, t: Date.now() }),
-          );
-        } catch {
-          /* ignore */
-        }
-        await navigate({ to: "/admin" });
-        return;
-      }
-    } catch {
-      /* Netzwerk-/Serverfehler → als falsch behandeln */
+      /* falsch */
     }
     setStatus("error");
   }
