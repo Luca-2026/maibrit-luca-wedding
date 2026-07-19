@@ -591,7 +591,7 @@ function Geschenke() {
 
 /* ---------------- RSVP ---------------- */
 
-function Rsvp({ deadline, email }: { deadline: string; email: string }) {
+function Rsvp({ deadline, email, phone }: { deadline: string; email: string; phone: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [attending, setAttending] = useState<"yes" | "no">("yes");
@@ -654,7 +654,7 @@ function Rsvp({ deadline, email }: { deadline: string; email: string }) {
         <a href={`mailto:${email}`} className="text-bordeaux underline">
           {email}
         </a>{" "}
-        oder +49 151 42360784
+        oder {phone}
       </p>
 
       {status === "ok" ? (
