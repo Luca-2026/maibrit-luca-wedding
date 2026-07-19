@@ -4,7 +4,7 @@
  * Standard-Webhoster (z. B. serverprofis, Apache/Nginx).
  *
  * Ablauf:
- *   1. `bun run build` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
+ *   1. `bun run build:app` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
  *   2. Startet den gebauten Worker lokal via `wrangler dev`.
  *   3. Ruft `/` und `/admin` ab → speichert als statische index.html.
  *   4. Rewrite: alle `/__l5e/assets-v1/...`-Pfade werden zu lokalen
@@ -40,8 +40,8 @@ async function waitForServer(url, timeoutMs = 30000) {
 }
 
 async function main() {
-  console.log("→ 1/6  Build");
-  run("bun", ["run", "build"]);
+  console.log("→ 1/6  App-Build");
+  run("bun", ["run", "build:app"]);
 
   console.log("→ 2/6  Starte Wrangler");
   const wr = spawn("bunx", ["wrangler", "dev", "--local", "--port", "8799", "--ip", "127.0.0.1"], {
