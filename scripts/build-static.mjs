@@ -82,7 +82,7 @@ function run(cmd, args, opts = {}) {
 
 function filterViteNoise(output) {
   return output
-    .replace(/The plugin "vite-tsconfig-paths" is detected\.[\s\S]*?resolve\.tsconfigPaths: true\} in your Vite config instead\.\s*/g, "")
+    .replace(/The plugin "vite-tsconfig-paths" is detected\.[\s\S]*?resolve\.tsconfigPaths: true in your Vite config instead\.\s*/g, "")
     .replace(/\n?\s*WARN\s+inlineDynamicImports option is ignored because the codeSplitting option is specified\.\s*/g, "")
     .replace(/\n?\(!\) Some chunks are larger than 500 kB after minification\.[\s\S]*?chunkSizeWarningLimit\.\s*/g, "");
 }
