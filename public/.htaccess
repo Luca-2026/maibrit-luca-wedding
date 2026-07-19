@@ -1,0 +1,15 @@
+# SPA-Fallback für Apache-Hosting (z. B. serverprofis).
+# Alle Routen serven die index.html, damit der Client-Router übernimmt.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Kein Indexing durch Suchmaschinen
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
