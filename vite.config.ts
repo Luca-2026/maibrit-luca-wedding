@@ -4,5 +4,42 @@
 //     componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { createLogger } from "vite";
 
-export default defineConfig({});
+const logger = createLogger();
+const warn = logger.warn;
+logger.warn = (message, options) => {
+  const text = typeof message === "string" ? message : String(message);
+  if (
+    text.includes('The plugin "vite-tsconfig-paths" is detected') ||
+    text.includes("Some chunks are larger than 500 kB") ||
+    text.includes("inlineDynamicImports option is ignored")
+  ) {
+    return;
+  }
+  warn(message, options);
+};
+
+export default defineConfig({
+  nitro: {
+    preset: "cloudflare-module",
+    output: {
+      dir: "dist",
+      serverDir: "dist/server",
+      publicDir: "dist/client",
+    },
+    cloudflare: {
+      nodeCompat: true,
+      deployConfig: true,
+    },
+  },
+  vite: {
+    customLogger: logger,
+    resolve: {
+      tsconfigPaths: true,
+    },
+    build: {
+      chunkSizeWarningLimit: 1500,
+    },
+  },
+});
