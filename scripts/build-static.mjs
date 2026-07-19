@@ -4,9 +4,10 @@
  * Standard-Webhoster (z. B. serverprofis, Apache/Nginx).
  *
  * Ablauf:
- *   1. `bun run build:app` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
- *   2. Lädt – falls vorhanden – den gebauten Server-Handler direkt über Node.
- *   3. Ruft `/` und `/admin` ab; ohne Server-Entry nutzt es den SPA-Fallback.
+ *   1. Entfernt alte Build-Artefakte und startet Vite direkt über Node.
+ *   2. Findet den tatsächlich erzeugten Client-Build (`dist/client`, `.output/public`, …).
+ *   3. Lädt – falls vorhanden – den gebauten Server-Handler direkt über Node.
+ *   4. Ruft `/` und `/admin` ab; ohne Server-Entry nutzt es den SPA-Fallback.
  *   4. Rewrite: alle `/__l5e/assets-v1/...`-Pfade werden zu lokalen
  *      `/assets-cdn/...`-Dateien, die Bilder werden von Lovable-CDN
  *      heruntergeladen und in `dist/assets-cdn/` abgelegt.
@@ -20,6 +21,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const LOVABLE_PROJECT_ID = "7691af02-23f9-4aeb-9e86-37387a472ecd";
+const FINAL_DIST_DIR = "dist";
 const LOCAL_ASSET_DIR = "assets-cdn";
 const ASSET_HOSTS = [
   process.env.LOVABLE_ASSET_HOST,
@@ -34,6 +36,12 @@ function runViteBuild() {
     throw new Error("Vite wurde nicht gefunden. Bitte zuerst die Dependencies installieren (z. B. npm install).");
   }
   run(process.execPath, [viteBin, "build"]);
+}
+
+function cleanPreviousBuild() {
+  for (const rel of [FINAL_DIST_DIR, ".output"]) {
+    fs.rmSync(rel, { recursive: true, force: true });
+  }
 }
 
 async function fetchAsset(key) {
@@ -53,6 +61,9 @@ async function fetchAsset(key) {
 
 function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, { stdio: "inherit", ...opts });
+  if (r.error) {
+    throw new Error(`Start fehlgeschlagen (${cmd}): ${r.error.message}`);
+  }
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
@@ -97,20 +108,21 @@ function createAssetBinding(rootDir) {
 }
 
 function findServerEntry() {
-  const serverDir = path.join("dist", "server");
-  if (!fs.existsSync(serverDir)) return null;
-
   const files = [];
   function walk(dir) {
+    if (!fs.existsSync(dir)) return;
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, entry.name);
-      if (entry.isDirectory()) walk(p);
+      if (entry.isDirectory()) {
+        if (entry.name === "public" || entry.name === "client" || entry.name === "assets") continue;
+        walk(p);
+      }
       else if (entry.name.endsWith(".mjs") || entry.name.endsWith(".js")) files.push(p);
     }
   }
-  walk(serverDir);
+  for (const dir of [path.join("dist", "server"), path.join(".output", "server")]) walk(dir);
 
-  const preferredNames = ["index.mjs", "index.js", "server.mjs", "server.js"];
+  const preferredNames = ["index.mjs", "index.js", "server.mjs", "server.js", "worker.mjs", "worker.js"];
   for (const name of preferredNames) {
     const match = files.find((file) => path.basename(file) === name);
     if (match) return match;
@@ -124,18 +136,88 @@ function findServerEntry() {
   return null;
 }
 
-function readClientIndexHtml() {
-  const clientIndex = path.join("dist", "client", "index.html");
-  if (!fs.existsSync(clientIndex)) {
-    throw new Error("Client index.html wurde nicht gefunden. Der App-Build hat keinen statischen Client erzeugt.");
+function findClientBuild() {
+  const candidateDirs = [
+    path.join("dist", "client"),
+    path.join("dist", "public"),
+    path.join(".output", "public"),
+    "dist",
+  ];
+
+  for (const dir of candidateDirs) {
+    const indexPath = path.join(dir, "index.html");
+    if (fs.existsSync(indexPath)) return { dir, indexPath };
   }
-  return fs.readFileSync(clientIndex, "utf8");
+
+  const found = [];
+  function walk(dir, depth = 0) {
+    if (!fs.existsSync(dir) || depth > 5) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (["node_modules", "server", "assets", "chunks"].includes(entry.name)) continue;
+        walk(p, depth + 1);
+      } else if (entry.name === "index.html") {
+        found.push(p);
+      }
+    }
+  }
+  walk("dist");
+  walk(".output");
+
+  if (found.length > 0) {
+    found.sort((a, b) => scoreClientIndex(b) - scoreClientIndex(a));
+    return { dir: path.dirname(found[0]), indexPath: found[0] };
+  }
+
+  throw new Error(
+    [
+      "Client index.html wurde nicht gefunden. Der App-Build hat keinen statischen Client erzeugt.",
+      "Gesucht wurde in: dist/client, dist/public, .output/public und dist.",
+      "Gefundene Build-Struktur:",
+      describeBuildTree(),
+    ].join("\n"),
+  );
 }
 
-async function renderStaticRoute(worker, routePath) {
+function scoreClientIndex(indexPath) {
+  const normalized = indexPath.replace(/\\/g, "/");
+  if (normalized === "dist/client/index.html") return 100;
+  if (normalized === ".output/public/index.html") return 90;
+  if (normalized.endsWith("/public/index.html")) return 80;
+  if (normalized === "dist/index.html") return 70;
+  return 10;
+}
+
+function describeBuildTree() {
+  const lines = [];
+  function walk(dir, prefix = "", depth = 0) {
+    if (!fs.existsSync(dir)) {
+      lines.push(`${prefix}${dir}/ fehlt`);
+      return;
+    }
+    if (depth > 2) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true }).slice(0, 30);
+    for (const entry of entries) {
+      lines.push(`${prefix}${entry.name}${entry.isDirectory() ? "/" : ""}`);
+      if (entry.isDirectory()) walk(path.join(dir, entry.name), `${prefix}  `, depth + 1);
+    }
+  }
+  for (const dir of ["dist", ".output"]) {
+    lines.push(`${dir}/`);
+    walk(dir, "  ");
+  }
+  return lines.join("\n");
+}
+
+function readClientIndexHtml(clientBuild) {
+  return fs.readFileSync(clientBuild.indexPath, "utf8");
+}
+
+async function renderStaticRoute(worker, routePath, clientDir) {
   const response = await worker.fetch(
     new Request(`http://127.0.0.1${routePath}`),
-    { ASSETS: createAssetBinding(path.join("dist", "client")) },
+    { ASSETS: createAssetBinding(clientDir) },
     { waitUntil() {}, passThroughOnException() {} },
   );
   if (!response.ok) {
@@ -144,33 +226,71 @@ async function renderStaticRoute(worker, routePath) {
   return response.text();
 }
 
+function copyClientBuildToFinalDist(clientDir) {
+  const sourceDir = path.resolve(clientDir);
+  const finalDir = path.resolve(FINAL_DIST_DIR);
+
+  if (sourceDir === finalDir) {
+    for (const rel of ["server", "nitro.json", "package.json", "package-lock.json"]) {
+      fs.rmSync(path.join(FINAL_DIST_DIR, rel), { recursive: true, force: true });
+    }
+    fs.rmSync(".output", { recursive: true, force: true });
+    return;
+  }
+
+  const tmpDir = path.resolve(`.static-dist-${Date.now()}`);
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  for (const entry of fs.readdirSync(sourceDir, { withFileTypes: true })) {
+    const src = path.join(sourceDir, entry.name);
+    const dest = path.join(tmpDir, entry.name);
+    fs.cpSync(src, dest, { recursive: true });
+  }
+
+  fs.rmSync(finalDir, { recursive: true, force: true });
+  fs.renameSync(tmpDir, finalDir);
+  fs.rmSync(".output", { recursive: true, force: true });
+}
+
 async function main() {
   console.log("→ 1/6  App-Build");
+  cleanPreviousBuild();
   runViteBuild();
 
-  console.log("→ 2/6  Lade Server-Handler / SPA-Fallback");
+  console.log("→ 2/6  Suche Client-Build + Server-Handler");
+  const clientBuild = findClientBuild();
   const serverEntryPath = findServerEntry();
   let homeHtml;
   let adminHtml;
 
   if (serverEntryPath) {
-    const serverEntry = `${pathToFileURL(path.resolve(serverEntryPath)).href}?t=${Date.now()}`;
-    const { default: worker } = await import(serverEntry);
-    console.log(`   Server-Entry: ${serverEntryPath}`);
-    console.log("→ 3/6  Prerender / + /admin");
-    homeHtml = await renderStaticRoute(worker, "/");
-    adminHtml = await renderStaticRoute(worker, "/admin");
-  } else {
-    console.log("   Kein dist/server-Entry gefunden – nutze statischen SPA-Fallback.");
+    try {
+      const serverEntry = `${pathToFileURL(path.resolve(serverEntryPath)).href}?t=${Date.now()}`;
+      const { default: worker } = await import(serverEntry);
+      if (!worker || typeof worker.fetch !== "function") throw new Error("Server-Entry exportiert keine fetch-Funktion.");
+      console.log(`   Client-Build: ${clientBuild.dir}`);
+      console.log(`   Server-Entry: ${serverEntryPath}`);
+      console.log("→ 3/6  Prerender / + /admin");
+      homeHtml = await renderStaticRoute(worker, "/", clientBuild.dir);
+      adminHtml = await renderStaticRoute(worker, "/admin", clientBuild.dir);
+    } catch (error) {
+      console.warn(`   Server-Prerender übersprungen (${error instanceof Error ? error.message : String(error)}).`);
+    }
+  }
+
+  if (!homeHtml || !adminHtml) {
+    console.log(`   Client-Build: ${clientBuild.dir}`);
+    console.log("   Kein nutzbarer Server-Entry gefunden – nutze statischen SPA-Fallback.");
     console.log("→ 3/6  Erzeuge / + /admin aus client/index.html");
-    const spaHtml = readClientIndexHtml();
+    const spaHtml = readClientIndexHtml(clientBuild);
     homeHtml = spaHtml;
     adminHtml = spaHtml;
   }
 
 
     console.log("→ 4/6  Lovable-CDN-Assets einbetten");
-    const outDir = path.join("dist", "client");
+    const outDir = clientBuild.dir;
     const localAssetsDir = path.join(outDir, LOCAL_ASSET_DIR);
     fs.mkdirSync(localAssetsDir, { recursive: true });
 
@@ -264,17 +384,7 @@ async function main() {
     fs.writeFileSync(path.join(outDir, ".htaccess"), htaccess);
 
     console.log("→ 6/6  Aufräumen + dist/ für GitHub vorbereiten");
-    for (const rel of ["server", "nitro.json", "package.json", "package-lock.json"]) {
-      fs.rmSync(path.join("dist", rel), { recursive: true, force: true });
-    }
-
-    for (const entry of fs.readdirSync(outDir, { withFileTypes: true })) {
-      const src = path.join(outDir, entry.name);
-      const dest = path.join("dist", entry.name);
-      fs.rmSync(dest, { recursive: true, force: true });
-      fs.cpSync(src, dest, { recursive: true });
-    }
-    fs.rmSync(outDir, { recursive: true, force: true });
+    copyClientBuildToFinalDist(outDir);
 
     console.log("\n✅  Statischer Build fertig: dist/ komplett hochladen.");
 }
