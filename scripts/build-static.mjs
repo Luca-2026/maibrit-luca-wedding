@@ -19,7 +19,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 import fs from "node:fs";
 import path from "node:path";
 
-const CDN_HOST = "https://cdn.lovable.dev";
+const CDN_HOST = process.env.LOVABLE_ASSET_HOST ?? "http://127.0.0.1:8080";
 const LOCAL_ASSET_DIR = "assets-cdn";
 
 function run(cmd, args, opts = {}) {
