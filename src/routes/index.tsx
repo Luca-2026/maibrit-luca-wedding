@@ -65,7 +65,7 @@ function WeddingPage() {
           <Trauzeugen people={content.trauzeugen} />
           <Wuensche />
           <Geschenke />
-          <Rsvp deadline={content.rsvpDeadline} email={content.contactEmail} />
+          <Rsvp deadline={content.rsvpDeadline} email={content.contactEmail} phone={content.contactPhone} />
           <Footer email={content.contactEmail} phone={content.contactPhone} />
 
         </>
