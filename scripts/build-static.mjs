@@ -5,7 +5,7 @@
  *
  * Ablauf:
  *   1. `bun run build:app` (regulärer TanStack-Start-Build mit Cloudflare-Preset).
- *   2. Startet den gebauten Worker lokal via `wrangler dev`.
+ *   2. Lädt den gebauten Server-Handler direkt über Node.
  *   3. Ruft `/` und `/admin` ab → speichert als statische index.html.
  *   4. Rewrite: alle `/__l5e/assets-v1/...`-Pfade werden zu lokalen
  *      `/assets-cdn/...`-Dateien, die Bilder werden von Lovable-CDN
@@ -14,10 +14,10 @@
  *   6. Kopiert den fertigen Client-Build nach `dist/`, damit GitHub-/Static-
  *      Hoster direkt den erwarteten `dist/index.html`-Ordner finden.
  */
-import { spawn, spawnSync } from "node:child_process";
-import { setTimeout as sleep } from "node:timers/promises";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const LOVABLE_PROJECT_ID = "7691af02-23f9-4aeb-9e86-37387a472ecd";
 const LOCAL_ASSET_DIR = "assets-cdn";
@@ -28,35 +28,12 @@ const ASSET_HOSTS = [
   `https://${LOVABLE_PROJECT_ID}.lovableproject.com`,
 ].filter((host, index, all) => Boolean(host) && all.indexOf(host) === index);
 
-function commandExists(cmd) {
-  return spawnSync(cmd, ["--version"], { stdio: "ignore" }).status === 0;
-}
-
-function getWranglerCommand() {
-  const binExt = process.platform === "win32" ? ".cmd" : "";
-  const localWrangler = path.join("node_modules", ".bin", `wrangler${binExt}`);
-  if (fs.existsSync(localWrangler)) return { cmd: localWrangler, args: [] };
-  if (commandExists("bunx")) return { cmd: "bunx", args: ["wrangler"] };
-  // GitHub/managed builders may provide `npm` but not the separate `npx` binary.
-  if (commandExists("npm")) return { cmd: "npm", args: ["exec", "--yes", "wrangler", "--"] };
-  throw new Error("Wrangler konnte nicht gestartet werden: weder lokale Binary noch bunx/npm gefunden.");
-}
-
-function runScript(scriptName) {
-  const userAgent = process.env.npm_config_user_agent ?? "";
-  if (userAgent.startsWith("bun") || (!userAgent && commandExists("bun"))) {
-    run("bun", ["run", scriptName]);
-    return;
+function runViteBuild() {
+  const viteBin = path.join("node_modules", "vite", "bin", "vite.js");
+  if (!fs.existsSync(viteBin)) {
+    throw new Error("Vite wurde nicht gefunden. Bitte zuerst die Dependencies installieren (z. B. npm install).");
   }
-  if (userAgent.startsWith("pnpm")) {
-    run("pnpm", ["run", scriptName]);
-    return;
-  }
-  if (userAgent.startsWith("yarn")) {
-    run("yarn", [scriptName]);
-    return;
-  }
-  run("npm", ["run", scriptName]);
+  run(process.execPath, [viteBin, "build"]);
 }
 
 async function fetchAsset(key) {
@@ -79,45 +56,69 @@ function run(cmd, args, opts = {}) {
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-async function waitForServer(url, timeoutMs = 30000) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const r = await fetch(url);
-      if (r.ok) return;
-    } catch {}
-    await sleep(300);
+function getContentType(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === ".html") return "text/html; charset=utf-8";
+  if (ext === ".css") return "text/css; charset=utf-8";
+  if (ext === ".js" || ext === ".mjs") return "text/javascript; charset=utf-8";
+  if (ext === ".json") return "application/json; charset=utf-8";
+  if (ext === ".svg") return "image/svg+xml";
+  if (ext === ".png") return "image/png";
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".webp") return "image/webp";
+  if (ext === ".woff2") return "font/woff2";
+  if (ext === ".woff") return "font/woff";
+  if (ext === ".ttf") return "font/ttf";
+  return "application/octet-stream";
+}
+
+function createAssetBinding(rootDir) {
+  const root = path.resolve(rootDir);
+  return {
+    async fetch(request) {
+      const url = new URL(request.url);
+      const pathname = decodeURIComponent(url.pathname);
+      const safePath = path.resolve(path.join(root, `.${pathname}`));
+      if (safePath !== root && !safePath.startsWith(`${root}${path.sep}`)) {
+        return new Response("Not found", { status: 404 });
+      }
+
+      let filePath = safePath;
+      try {
+        const stat = await fs.promises.stat(filePath);
+        if (stat.isDirectory()) filePath = path.join(filePath, "index.html");
+        const body = await fs.promises.readFile(filePath);
+        return new Response(body, { headers: { "content-type": getContentType(filePath) } });
+      } catch {
+        return new Response("Not found", { status: 404 });
+      }
+    },
+  };
+}
+
+async function renderStaticRoute(worker, routePath) {
+  const response = await worker.fetch(
+    new Request(`http://127.0.0.1${routePath}`),
+    { ASSETS: createAssetBinding(path.join("dist", "client")) },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  if (!response.ok) {
+    throw new Error(`Prerender fehlgeschlagen für ${routePath}: HTTP ${response.status}\n${await response.text()}`);
   }
-  throw new Error(`Server ${url} nicht erreichbar`);
+  return response.text();
 }
 
 async function main() {
   console.log("→ 1/6  App-Build");
-  runScript("build:app");
+  runViteBuild();
 
-  console.log("→ 2/6  Starte Wrangler");
-  const wrangler = getWranglerCommand();
-  const wr = spawn(wrangler.cmd, [...wrangler.args, "dev", "--local", "--port", "8799", "--ip", "127.0.0.1"], {
-    cwd: "dist",
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  wr.on("error", (error) => {
-    console.error(`Wrangler-Start fehlgeschlagen (${wrangler.cmd}): ${error.message}`);
-  });
-  wr.stdout.on("data", () => {});
-  wr.stderr.on("data", () => {});
+  console.log("→ 2/6  Lade Server-Handler");
+  const serverEntry = `${pathToFileURL(path.resolve("dist", "server", "index.mjs")).href}?t=${Date.now()}`;
+  const { default: worker } = await import(serverEntry);
 
-  try {
-    await waitForServer("http://127.0.0.1:8799/");
-
-    console.log("→ 3/6  Prerender /");
-    const homeHtml = await (await fetch("http://127.0.0.1:8799/")).text();
-    const adminHtml = await (await fetch("http://127.0.0.1:8799/admin")).text();
-
-    // Wrangler nicht mehr gebraucht – beenden, damit dist/client nicht mehr geöffnet ist
-    wr.kill("SIGTERM");
-    spawnSync("pkill", ["-f", "wrangler dev"], { stdio: "ignore" });
-    await sleep(500);
+  console.log("→ 3/6  Prerender / + /admin");
+  const homeHtml = await renderStaticRoute(worker, "/");
+  const adminHtml = await renderStaticRoute(worker, "/admin");
 
 
     console.log("→ 4/6  Lovable-CDN-Assets einbetten");
@@ -228,15 +229,9 @@ async function main() {
     fs.rmSync(outDir, { recursive: true, force: true });
 
     console.log("\n✅  Statischer Build fertig: dist/ komplett hochladen.");
-  } finally {
-    wr.kill("SIGTERM");
-    // Notfalls Restprozess killen
-    spawnSync("pkill", ["-f", "wrangler dev"], { stdio: "ignore" });
-  }
 }
 
 main().catch((e) => {
   console.error(e);
-  spawnSync("pkill", ["-f", "wrangler dev"], { stdio: "ignore" });
   process.exit(1);
 });
