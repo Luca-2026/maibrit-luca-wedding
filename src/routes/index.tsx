@@ -847,7 +847,6 @@ function Footer({ email, phone }: { email: string; phone?: string }) {
 
 
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
-            <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
             <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
           </div>
         </div>
@@ -862,7 +861,7 @@ function Footer({ email, phone }: { email: string; phone?: string }) {
         />
       </div>
 
-      <LegalSections email={email} />
+      <LegalSections />
     </footer>
   );
 }
@@ -874,27 +873,18 @@ function PublicFooter() {
       <div className="mx-auto max-w-6xl px-5 py-10 flex flex-wrap items-center justify-between gap-4 text-xs text-olive/80">
         <p className="caps">Maibrit &amp; Luca · 24 · 10 · 2026</p>
         <div className="flex gap-6 caps text-rose">
-          <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
           <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
         </div>
       </div>
-      <LegalSections email="hallo@maibritundluca.de" />
+      <LegalSections />
     </footer>
   );
 }
 
-function LegalSections({ email }: { email: string }) {
+function LegalSections() {
   return (
     <div className="border-t border-rose/20">
-      <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-olive/75">
-        <section id="impressum">
-          <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
-          <p>
-            Maibrit &amp; Luca
-            <br />
-            Kontakt: <a href={`mailto:${email}`} className="text-bordeaux underline">{email}</a>
-          </p>
-        </section>
+      <div className="mx-auto max-w-6xl px-5 py-10 text-sm text-olive/75">
         <section id="datenschutz">
           <h3 className="caps text-xs text-olive mb-2">Datenschutz</h3>
           <p>
