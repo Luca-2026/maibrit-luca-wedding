@@ -876,7 +876,7 @@ function PublicFooter() {
           <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
         </div>
       </div>
-      <LegalSections email="hallo@maibritundluca.de" />
+      <LegalSections />
     </footer>
   );
 }
