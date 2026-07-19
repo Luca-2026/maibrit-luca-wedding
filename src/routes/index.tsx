@@ -873,7 +873,6 @@ function PublicFooter() {
       <div className="mx-auto max-w-6xl px-5 py-10 flex flex-wrap items-center justify-between gap-4 text-xs text-olive/80">
         <p className="caps">Maibrit &amp; Luca · 24 · 10 · 2026</p>
         <div className="flex gap-6 caps text-rose">
-          <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
           <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
         </div>
       </div>
