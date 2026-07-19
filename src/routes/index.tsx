@@ -861,7 +861,7 @@ function Footer({ email, phone }: { email: string; phone?: string }) {
         />
       </div>
 
-      <LegalSections email={email} />
+      <LegalSections />
     </footer>
   );
 }
