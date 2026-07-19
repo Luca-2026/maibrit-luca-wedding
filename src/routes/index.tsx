@@ -847,7 +847,6 @@ function Footer({ email, phone }: { email: string; phone?: string }) {
 
 
           <div className="mt-8 flex flex-wrap gap-6 caps text-xs text-rose">
-            <a href="#impressum" className="hover:text-bordeaux">Impressum</a>
             <a href="#datenschutz" className="hover:text-bordeaux">Datenschutz</a>
           </div>
         </div>
