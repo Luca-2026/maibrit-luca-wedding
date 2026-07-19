@@ -58,6 +58,12 @@ async function main() {
     const homeHtml = await (await fetch("http://127.0.0.1:8799/")).text();
     const adminHtml = await (await fetch("http://127.0.0.1:8799/admin")).text();
 
+    // Wrangler nicht mehr gebraucht – beenden, damit dist/client nicht mehr geöffnet ist
+    wr.kill("SIGTERM");
+    spawnSync("pkill", ["-f", "wrangler dev"], { stdio: "ignore" });
+    await sleep(500);
+
+
     console.log("→ 4/6  Lovable-CDN-Assets einbetten");
     const outDir = path.join("dist", "client");
     const localAssetsDir = path.join(outDir, LOCAL_ASSET_DIR);
