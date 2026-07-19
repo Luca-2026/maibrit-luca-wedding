@@ -32,6 +32,16 @@ function commandExists(cmd) {
   return spawnSync(cmd, ["--version"], { stdio: "ignore" }).status === 0;
 }
 
+function getWranglerCommand() {
+  const binExt = process.platform === "win32" ? ".cmd" : "";
+  const localWrangler = path.join("node_modules", ".bin", `wrangler${binExt}`);
+  if (fs.existsSync(localWrangler)) return { cmd: localWrangler, args: [] };
+  if (commandExists("bunx")) return { cmd: "bunx", args: ["wrangler"] };
+  // GitHub/managed builders may provide `npm` but not the separate `npx` binary.
+  if (commandExists("npm")) return { cmd: "npm", args: ["exec", "--yes", "wrangler", "--"] };
+  throw new Error("Wrangler konnte nicht gestartet werden: weder lokale Binary noch bunx/npm gefunden.");
+}
+
 function runScript(scriptName) {
   const userAgent = process.env.npm_config_user_agent ?? "";
   if (userAgent.startsWith("bun") || (!userAgent && commandExists("bun"))) {
@@ -86,12 +96,13 @@ async function main() {
   runScript("build:app");
 
   console.log("→ 2/6  Starte Wrangler");
-  const wrangler = commandExists("bunx")
-    ? { cmd: "bunx", args: ["wrangler"] }
-    : { cmd: "npx", args: ["--yes", "wrangler"] };
+  const wrangler = getWranglerCommand();
   const wr = spawn(wrangler.cmd, [...wrangler.args, "dev", "--local", "--port", "8799", "--ip", "127.0.0.1"], {
     cwd: "dist",
     stdio: ["ignore", "pipe", "pipe"],
+  });
+  wr.on("error", (error) => {
+    console.error(`Wrangler-Start fehlgeschlagen (${wrangler.cmd}): ${error.message}`);
   });
   wr.stdout.on("data", () => {});
   wr.stderr.on("data", () => {});
