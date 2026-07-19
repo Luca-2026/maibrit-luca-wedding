@@ -1,12 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import {
-  adminLock,
-  adminUnlock,
-  listRsvps,
-  type RsvpRow,
-} from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -18,77 +12,106 @@ export const Route = createFileRoute("/admin")({
   }),
 });
 
+export type RsvpRow = {
+  id: string;
+  created_at: string;
+  name: string;
+  attending: boolean;
+  party_size: number;
+  companions: string | null;
+  message: string | null;
+};
+
+type Status = "loading" | "signed-out" | "no-role" | "ready";
+
 function AdminPage() {
-  const unlock = useServerFn(adminUnlock);
-  const lock = useServerFn(adminLock);
-  const list = useServerFn(listRsvps);
-
-  const [unlocked, setUnlocked] = useState<boolean | null>(null);
+  const [status, setStatus] = useState<Status>("loading");
   const [rows, setRows] = useState<RsvpRow[]>([]);
+  const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  async function refresh() {
-    setLoading(true);
+  async function loadForCurrentUser() {
     setError(null);
-    try {
-      const res = await list();
-      setUnlocked(res.unlocked);
-      setRows(res.rows);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
+    const { data: userRes } = await supabase.auth.getUser();
+    if (!userRes.user) {
+      setStatus("signed-out");
+      setRows([]);
+      return;
     }
+    const { data, error } = await supabase
+      .from("rsvps")
+      .select("id, created_at, name, attending, party_size, companions, message")
+      .order("created_at", { ascending: false });
+    if (error) {
+      // Kein Admin-Zugriff → RLS filtert alles weg, wir zeigen "keine Berechtigung"
+      setStatus("no-role");
+      setRows([]);
+      return;
+    }
+    // Sicherheitscheck: hat der User wirklich die Rolle?
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userRes.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleRow) {
+      setStatus("no-role");
+      setRows([]);
+      return;
+    }
+    setRows((data ?? []) as RsvpRow[]);
+    setStatus("ready");
   }
 
   useEffect(() => {
-    try {
-      const primed = window.sessionStorage.getItem("mul-admin-primed");
-      if (primed) {
-        window.sessionStorage.removeItem("mul-admin-primed");
-        const parsed = JSON.parse(primed) as { rows?: RsvpRow[]; t?: number };
-        if (parsed.t && Date.now() - parsed.t < 60_000) {
-          setUnlocked(true);
-          setRows(parsed.rows ?? []);
-          return;
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-    refresh().catch((e) => setError((e as Error).message));
+    loadForCurrentUser();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      loadForCurrentUser();
+    });
+    return () => {
+      sub.subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setBusy(true);
     try {
-      const res = await unlock({ data: { password: pw } });
-      if (!res.ok) {
-        setError("Passwort stimmt nicht.");
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: pw,
+          options: { emailRedirectTo: window.location.origin + "/admin" },
+        });
+        if (error) throw error;
       } else {
-        setPw("");
-        setUnlocked(true);
-        setRows(res.rows);
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: pw,
+        });
+        if (error) throw error;
       }
+      setPw("");
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }
 
-  async function onLock() {
-    await lock();
-    setUnlocked(false);
+  async function onSignOut() {
+    await supabase.auth.signOut();
+    setStatus("signed-out");
     setRows([]);
   }
 
-  if (unlocked === null) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-cream text-olive flex items-center justify-center">
         <p className="caps text-xs text-olive/60">Lädt…</p>
@@ -96,7 +119,7 @@ function AdminPage() {
     );
   }
 
-  if (!unlocked) {
+  if (status === "signed-out") {
     return (
       <div className="min-h-screen bg-cream text-olive flex items-center justify-center px-5">
         <form
@@ -110,10 +133,21 @@ function AdminPage() {
             </p>
           </div>
           <label className="block">
+            <span className="caps text-xs text-olive block mb-2">E-Mail</span>
+            <input
+              type="email"
+              autoFocus
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-transparent border-b border-rose/50 py-3 text-olive focus:border-bordeaux focus:outline-none"
+            />
+          </label>
+          <label className="block">
             <span className="caps text-xs text-olive block mb-2">Passwort</span>
             <input
               type="password"
-              autoFocus
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               className="w-full bg-transparent border-b border-rose/50 py-3 text-olive focus:border-bordeaux focus:outline-none"
@@ -126,12 +160,43 @@ function AdminPage() {
           )}
           <button
             type="submit"
-            disabled={loading}
+            disabled={busy}
             className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
-            {loading ? "Prüfe…" : "Einloggen"}
+            {busy ? "Bitte warten…" : mode === "signup" ? "Registrieren" : "Einloggen"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === "signup" ? "signin" : "signup");
+              setError(null);
+            }}
+            className="w-full caps text-[10px] text-olive/60 hover:text-bordeaux underline underline-offset-4"
+          >
+            {mode === "signup"
+              ? "Ich habe bereits ein Konto"
+              : "Erstmalig registrieren"}
           </button>
         </form>
+      </div>
+    );
+  }
+
+  if (status === "no-role") {
+    return (
+      <div className="min-h-screen bg-cream text-olive flex items-center justify-center px-5">
+        <div className="w-full max-w-sm border border-bordeaux/30 bg-cream p-8 space-y-4 text-center">
+          <p className="script text-3xl text-rose">Kein Zugriff</p>
+          <p className="text-sm text-olive/80">
+            Dieses Konto hat keine Admin-Berechtigung.
+          </p>
+          <button
+            onClick={onSignOut}
+            className="caps text-xs px-6 py-3 bg-bordeaux text-cream hover:bg-olive transition-colors"
+          >
+            Ausloggen
+          </button>
+        </div>
       </div>
     );
   }
@@ -163,13 +228,13 @@ function AdminPage() {
           </div>
           <div className="flex items-center gap-4">
             <button
-              onClick={refresh}
+              onClick={loadForCurrentUser}
               className="caps text-xs text-rose border-b border-rose pb-1 hover:text-bordeaux hover:border-bordeaux"
             >
               Aktualisieren
             </button>
             <button
-              onClick={onLock}
+              onClick={onSignOut}
               className="caps text-xs px-4 py-2 bg-bordeaux text-cream hover:bg-olive transition-colors"
             >
               Ausloggen
@@ -184,16 +249,6 @@ function AdminPage() {
           <Stat label="Zusagen (Personen)" value={yesGuests} accent />
           <Stat label="Absagen" value={no.length} />
         </section>
-
-        {error && (
-          <p role="alert" className="text-bordeaux text-sm">
-            {error}
-          </p>
-        )}
-
-        {loading && (
-          <p className="caps text-xs text-olive/60">Lade Antworten…</p>
-        )}
 
         {rows.length === 0 ? (
           <p className="text-olive/70">Noch keine Antworten eingegangen.</p>
