@@ -884,15 +884,7 @@ function PublicFooter() {
 function LegalSections({ email }: { email: string }) {
   return (
     <div className="border-t border-rose/20">
-      <div className="mx-auto max-w-6xl px-5 py-10 space-y-8 text-sm text-olive/75">
-        <section id="impressum">
-          <h3 className="caps text-xs text-olive mb-2">Impressum</h3>
-          <p>
-            Maibrit &amp; Luca
-            <br />
-            Kontakt: <a href={`mailto:${email}`} className="text-bordeaux underline">{email}</a>
-          </p>
-        </section>
+      <div className="mx-auto max-w-6xl px-5 py-10 text-sm text-olive/75">
         <section id="datenschutz">
           <h3 className="caps text-xs text-olive mb-2">Datenschutz</h3>
           <p>
