@@ -35,7 +35,7 @@ function runViteBuild() {
   if (!fs.existsSync(viteBin)) {
     throw new Error("Vite wurde nicht gefunden. Bitte zuerst die Dependencies installieren (z. B. npm install).");
   }
-  run(process.execPath, [viteBin, "build"]);
+  run(process.execPath, [viteBin, "build"], { filterKnownWarnings: true });
 }
 
 function cleanPreviousBuild() {
@@ -60,11 +60,31 @@ async function fetchAsset(key) {
 }
 
 function run(cmd, args, opts = {}) {
-  const r = spawnSync(cmd, args, { stdio: "inherit", ...opts });
+  const { filterKnownWarnings = false, ...spawnOpts } = opts;
+  const r = spawnSync(cmd, args, {
+    stdio: filterKnownWarnings ? "pipe" : "inherit",
+    encoding: filterKnownWarnings ? "utf8" : undefined,
+    ...spawnOpts,
+  });
   if (r.error) {
     throw new Error(`Start fehlgeschlagen (${cmd}): ${r.error.message}`);
   }
+  if (filterKnownWarnings) {
+    const output = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+    const filtered = filterViteNoise(output);
+    if (filtered.trim()) {
+      if (r.status === 0) process.stdout.write(filtered);
+      else process.stderr.write(output);
+    }
+  }
   if (r.status !== 0) process.exit(r.status ?? 1);
+}
+
+function filterViteNoise(output) {
+  return output
+    .replace(/The plugin "vite-tsconfig-paths" is detected\.[\s\S]*?resolve\.tsconfigPaths: true\} in your Vite config instead\.\s*/g, "")
+    .replace(/\n?\s*WARN\s+inlineDynamicImports option is ignored because the codeSplitting option is specified\.\s*/g, "")
+    .replace(/\n?\(!\) Some chunks are larger than 500 kB after minification\.[\s\S]*?chunkSizeWarningLimit\.\s*/g, "");
 }
 
 function getContentType(filePath) {
@@ -149,6 +169,10 @@ function findClientBuild() {
     if (fs.existsSync(indexPath)) return { dir, indexPath };
   }
 
+  for (const dir of candidateDirs) {
+    if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) return { dir, indexPath: null };
+  }
+
   const found = [];
   function walk(dir, depth = 0) {
     if (!fs.existsSync(dir) || depth > 5) return;
@@ -211,6 +235,16 @@ function describeBuildTree() {
 }
 
 function readClientIndexHtml(clientBuild) {
+  if (!clientBuild.indexPath) {
+    throw new Error(
+      [
+        "Kein SPA-Fallback möglich: Im Client-Build gibt es kein index.html.",
+        "Der Server-Prerender muss für diese App erfolgreich sein.",
+        "Gefundene Build-Struktur:",
+        describeBuildTree(),
+      ].join("\n"),
+    );
+  }
   return fs.readFileSync(clientBuild.indexPath, "utf8");
 }
 
