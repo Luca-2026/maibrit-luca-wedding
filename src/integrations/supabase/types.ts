@@ -70,7 +70,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_owner_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin"
