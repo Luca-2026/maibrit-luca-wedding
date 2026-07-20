@@ -29,7 +29,6 @@ function AdminPage() {
   const [rows, setRows] = useState<RsvpRow[]>([]);
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
