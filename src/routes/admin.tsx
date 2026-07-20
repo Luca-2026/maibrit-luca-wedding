@@ -41,24 +41,34 @@ function AdminPage() {
       setRows([]);
       return;
     }
-    const { data, error } = await supabase
-      .from("rsvps")
-      .select("id, created_at, name, attending, party_size, companions, message")
-      .order("created_at", { ascending: false });
-    if (error) {
-      // Kein Admin-Zugriff → RLS filtert alles weg, wir zeigen "keine Berechtigung"
-      setStatus("no-role");
-      setRows([]);
-      return;
-    }
-    // Sicherheitscheck: hat der User wirklich die Rolle?
-    const { data: roleRow } = await supabase
+    // Owner-E-Mail darf sich beim ersten Login selbst als Admin freischalten
+    let { data: roleRow } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userRes.user.id)
       .eq("role", "admin")
       .maybeSingle();
     if (!roleRow) {
+      await (supabase.rpc as unknown as (fn: string) => Promise<unknown>)("claim_owner_admin");
+      const retry = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userRes.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      roleRow = retry.data;
+    }
+    if (!roleRow) {
+      setStatus("no-role");
+      setRows([]);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("rsvps")
+      .select("id, created_at, name, attending, party_size, companions, message")
+      .order("created_at", { ascending: false });
+    if (error) {
+      setError(error.message);
       setStatus("no-role");
       setRows([]);
       return;
