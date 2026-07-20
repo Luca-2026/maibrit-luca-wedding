@@ -116,9 +116,12 @@ function Nav({ unlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
             </button>
           </>
         ) : (
-          <span className="display text-base md:text-lg text-rose">
-            Maibrit &amp; Luca
-          </span>
+          <a
+            href="/admin"
+            className="caps text-[10px] text-rose/70 hover:text-bordeaux transition-colors"
+          >
+            Admin-Login
+          </a>
         )}
       </div>
     </nav>
