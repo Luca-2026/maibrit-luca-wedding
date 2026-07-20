@@ -49,7 +49,7 @@ function AdminPage() {
       .eq("role", "admin")
       .maybeSingle();
     if (!roleRow) {
-      await supabase.rpc("claim_owner_admin");
+      await (supabase.rpc as unknown as (fn: string) => Promise<unknown>)("claim_owner_admin");
       const retry = await supabase
         .from("user_roles")
         .select("role")
