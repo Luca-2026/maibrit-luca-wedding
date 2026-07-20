@@ -147,7 +147,7 @@ function AdminPage() {
             <span className="caps text-xs text-olive block mb-2">Passwort</span>
             <input
               type="password"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               className="w-full bg-transparent border-b border-rose/50 py-3 text-olive focus:border-bordeaux focus:outline-none"
@@ -163,19 +163,7 @@ function AdminPage() {
             disabled={busy}
             className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
-            {busy ? "Bitte warten…" : mode === "signup" ? "Registrieren" : "Einloggen"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signup" ? "signin" : "signup");
-              setError(null);
-            }}
-            className="w-full caps text-[10px] text-olive/60 hover:text-bordeaux underline underline-offset-4"
-          >
-            {mode === "signup"
-              ? "Ich habe bereits ein Konto"
-              : "Erstmalig registrieren"}
+            {busy ? "Bitte warten…" : "Einloggen"}
           </button>
         </form>
       </div>
