@@ -92,20 +92,11 @@ function AdminPage() {
     setError(null);
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password: pw,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: pw,
-        });
-        if (error) throw error;
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: pw,
+      });
+      if (error) throw error;
       setPw("");
     } catch (e) {
       setError((e as Error).message);
