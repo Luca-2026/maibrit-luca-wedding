@@ -29,7 +29,6 @@ function AdminPage() {
   const [rows, setRows] = useState<RsvpRow[]>([]);
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -93,20 +92,11 @@ function AdminPage() {
     setError(null);
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password: pw,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: pw,
-        });
-        if (error) throw error;
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: pw,
+      });
+      if (error) throw error;
       setPw("");
     } catch (e) {
       setError((e as Error).message);
@@ -157,7 +147,7 @@ function AdminPage() {
             <span className="caps text-xs text-olive block mb-2">Passwort</span>
             <input
               type="password"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               className="w-full bg-transparent border-b border-rose/50 py-3 text-olive focus:border-bordeaux focus:outline-none"
@@ -173,19 +163,7 @@ function AdminPage() {
             disabled={busy}
             className="w-full caps text-xs px-8 py-4 bg-bordeaux text-cream hover:bg-olive transition-colors disabled:opacity-60"
           >
-            {busy ? "Bitte warten…" : mode === "signup" ? "Registrieren" : "Einloggen"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signup" ? "signin" : "signup");
-              setError(null);
-            }}
-            className="w-full caps text-[10px] text-olive/60 hover:text-bordeaux underline underline-offset-4"
-          >
-            {mode === "signup"
-              ? "Ich habe bereits ein Konto"
-              : "Erstmalig registrieren"}
+            {busy ? "Bitte warten…" : "Einloggen"}
           </button>
         </form>
       </div>
