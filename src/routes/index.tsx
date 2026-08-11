@@ -483,7 +483,6 @@ function Dresscode() {
           { name: "Bordeaux", hex: "#4F132E" },
           { name: "Eukalyptus", hex: "#AEBDA6" },
           { name: "Salbei", hex: "#7E8C6C" },
-          { name: "Olivgrün", hex: "#46531F" },
         ].map((color) => (
           <div key={color.name} className="flex flex-col items-center gap-3">
             <div
