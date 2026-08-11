@@ -599,15 +599,26 @@ function Rsvp({ deadline, email, phone }: { deadline: string; email: string; pho
     }
 
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.from("rsvps").insert({
-        name,
-        attending: attending === "yes",
-        party_size: partySize,
-        companions: companions || null,
-        message: message || null,
+      // Direkter REST-Aufruf: der generierte Client entfernt den Authorization-Header,
+      // wodurch Gäste-Einträge (anon) an der Row-Level-Security scheitern.
+      const url = import.meta.env.VITE_SUPABASE_URL as string;
+      const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+      const res = await fetch(`${url}/rest/v1/rsvps`, {
+        method: "POST",
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          attending: attending === "yes",
+          party_size: partySize,
+          companions: companions || null,
+          message: message || null,
+        }),
       });
-      if (error) throw error;
+      if (!res.ok) throw new Error(await res.text());
       setStatus("ok");
       form.reset();
       setAttending("yes");
